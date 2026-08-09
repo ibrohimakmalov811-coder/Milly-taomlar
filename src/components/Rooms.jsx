@@ -1,0 +1,587 @@
+'use client'
+
+import React, { useState, useMemo, useEffect } from 'react';
+
+const STORAGE_KEY = 'tapchan_bookings_v1';
+
+const INITIAL_TAPCHANS = [
+  {
+    id: 1,
+    name: "Samarqand Shohona Tapchani",
+    capacity: 8,
+    view: "Favvora ko'rinishi",
+    status: "available",
+    price: "Minimal buyurtma: 300,000 so'm",
+    popularity: 98,
+    image: "https://www.afisha.uz/uploads/media/2013/09/0276741.jpg"
+  },
+  {
+    id: 2,
+    name: "Buxoro Oila VIP Tapchan",
+    capacity: 6,
+    view: "Yashil bog' manzarasi",
+    status: "available",
+    price: "Bepul band qilish",
+    popularity: 92,
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS03IMIponejMMO5OV__xxYSZXFVyJsz-PIRORQ0-oqtfaLZg32FkUErH4&s=10"
+  },
+  {
+    id: 3,
+    name: "Xiva Hujra Tapchani",
+    capacity: 12,
+    view: "Sharqona hovli",
+    status: "limited",
+    price: "Minimal buyurtma: 500,000 so'm",
+    popularity: 99,
+    image: "https://avatars.mds.yandex.net/get-altay/7779554/2a000001885db3e5f0dcb7974a65d3d03786/L_height"
+  },
+  {
+    id: 4,
+    name: "Toshkent Shinam Tapchani",
+    capacity: 4,
+    view: "Choyxona ichki ko'rinishi",
+    status: "reserved",
+    price: "Bepul band qilish",
+    popularity: 85,
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUhB8zpa5AqDimlliCE63SXdj5dFTLfAgEHSpal_KIJ217x7J83wtiFOvs&s=10"
+  },
+  {
+    id: 5,
+    name: "Farg'ona Milliy Tapchan",
+    capacity: 10,
+    view: "Anorzor manzarasi",
+    status: "available",
+    price: "Minimal buyurtma: 400,000 so'm",
+    popularity: 90,
+    image: "https://avatars.mds.yandex.net/get-altay/14021521/2a00000193a69514a810be96a48066bb87a7/L_height"
+  },
+  {
+    id: 6,
+    name: "Ipak Yo'li Kichik Tapchan",
+    capacity: 4,
+    view: "Tinch sharqona burchak",
+    status: "available",
+    price: "Bepul band qilish",
+    popularity: 88,
+    image: "https://avatars.mds.yandex.net/get-altay/16341471/2a000001999bb44a40870c0b43fb4af1610f/L_height"
+  },
+  {
+    id: 7,
+    name: "Andijon Bahoriy Tapchan",
+    capacity: 6,
+    view: "Sharshara bo'yi",
+    status: "available",
+    price: "Bepul band qilish",
+    popularity: 94,
+    image: "https://avatars.mds.yandex.net/get-altay/16341471/2a000001999bb44a40870c0b43fb4af1610f/L_height"
+  },
+  {
+    id: 8,
+    name: "Qo'qon Xon Tapchani",
+    capacity: 10,
+    view: "Xon saroyi ko'rinishi",
+    status: "limited",
+    price: "Minimal buyurtma: 450,000 so'm",
+    popularity: 96,
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbLaYkuVnozaC2qp-6_2XF_CJabkKkLrtYj285BEqui00qvJ674VdAyxBD&s=10"
+  },
+  {
+    id: 9,
+    name: "Surxon Milliy Tapchani",
+    capacity: 8,
+    view: "Salkin soy bo'yi",
+    status: "available",
+    price: "Minimal buyurtma: 350,000 so'm",
+    popularity: 91,
+    image: "https://eurasia.travel/wp-content/uploads/2024/07/chayhana-2.jpg"
+  },
+  {
+    id: 10,
+    name: "Chorvoq Manzarali Tapchan",
+    capacity: 6,
+    view: "Tog' va suv manzarasi",
+    status: "available",
+    price: "Bepul band qilish",
+    popularity: 97,
+    image: "https://storage.kun.uz/source/3/VGompc94QMA9XNy2MMNLpNootGD9Tr2l.png"
+  }
+];
+
+// Boshlang'ich (default) bandlovlar — localStorage bo'sh bo'lsa shu ishlatiladi
+const DEFAULT_BOOKINGS = {
+  4: {
+    date: new Date().toISOString().split('T')[0],
+    time: '18:00',
+    guests: 4,
+    paymentAmount: "Bepul band qilish",
+    endTime: new Date(Date.now() + 1 * 20 * 20 * 1000).getTime()
+  }
+};
+
+export default function RoomBooking() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [capacityFilter, setCapacityFilter] = useState('all');
+  const [availabilityFilter, setAvailabilityFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('popular');
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTapchanId, setSelectedTapchanId] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+
+  // Dastlab default qiymat bilan boshlaymiz (SSR uchun xavfsiz),
+  // keyin useEffect ichida localStorage'dan o'qib ustidan yozamiz.
+  const [bookings, setBookings] = useState(DEFAULT_BOOKINGS);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Har daqiqada "tick" o'zgarib, band muddati tugagan xonalarni
+  // avtomatik "bo'sh" holatiga qaytarish uchun komponentni qayta render qiladi
+  const [tick, setTick] = useState(0);
+
+  const [formData, setFormData] = useState({
+    fullName: '',
+    phone: '',
+    date: new Date().toISOString().split('T')[0],
+    time: '18:00',
+    guests: 6,
+    specialRequests: ''
+  });
+
+  // 1) Komponent mount bo'lganda localStorage'dan bandlovlarni o'qish
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        setBookings(JSON.parse(saved));
+      }
+    } catch (err) {
+      console.error('localStorage o\'qishda xatolik:', err);
+    } finally {
+      setIsHydrated(true);
+    }
+  }, []);
+
+  // 2) bookings o'zgargan sayin localStorage'ga yozib borish
+  useEffect(() => {
+    if (!isHydrated) return; // dastlabki hydration paytida qayta yozib yubormaslik uchun
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(bookings));
+    } catch (err) {
+      console.error('localStorage yozishda xatolik:', err);
+    }
+  }, [bookings, isHydrated]);
+
+  // 3) Har 30 soniyada "tick"ni yangilab, muddati tugagan bandlovlarni
+  // ekranga "bo'sh" deb qayta chiqarish
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTick((t) => t + 1);
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const getTapchanRealStatus = (tapchan) => {
+    const booking = bookings[tapchan.id];
+    if (booking) {
+      const now = new Date().getTime();
+      if (now < booking.endTime) {
+        return { isReserved: true, label: "Bu xona band qilindi", details: booking };
+      } else {
+        return { isReserved: false, label: "Bu xona ishlatish uchun bo'sh", details: null };
+      }
+    }
+    if (tapchan.status === 'reserved') {
+      return { isReserved: true, label: "Bu xona band qilindi", details: null };
+    }
+    return { isReserved: false, label: "Bu xona ishlatish uchun bo'sh", details: null };
+  };
+
+  const filteredTapchans = useMemo(() => {
+    return INITIAL_TAPCHANS.filter((item) => {
+      const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
+
+      let matchesCapacity = true;
+      if (capacityFilter === '10') {
+        matchesCapacity = item.capacity >= 10;
+      } else if (capacityFilter !== 'all') {
+        matchesCapacity = item.capacity === parseInt(capacityFilter, 10);
+      }
+
+      let matchesAvailability = true;
+      if (availabilityFilter !== 'all') {
+        const currentStatus = getTapchanRealStatus(item);
+        if (availabilityFilter === 'available') matchesAvailability = !currentStatus.isReserved;
+        if (availabilityFilter === 'reserved') matchesAvailability = currentStatus.isReserved;
+      }
+
+      return matchesSearch && matchesCapacity && matchesAvailability;
+    }).sort((a, b) => {
+      if (sortBy === 'capacity-asc') return a.capacity - b.capacity;
+      if (sortBy === 'capacity-desc') return b.capacity - a.capacity;
+      return b.popularity - a.popularity;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, capacityFilter, availabilityFilter, sortBy, bookings, tick]);
+
+  const handleOpenModal = (id) => {
+    setSelectedTapchanId(id);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Yangi dinamik bandlov yozuvini saqlash (state -> useEffect orqali localStorage'ga ham yoziladi)
+    if (selectedTapchanId) {
+      const selectedTapchan = INITIAL_TAPCHANS.find(t => t.id === selectedTapchanId);
+      const bookingEnd = new Date(`${formData.date}T${formData.time}`).getTime() + (3 * 60 * 60 * 1000);
+
+      setBookings(prev => ({
+        ...prev,
+        [selectedTapchanId]: {
+          date: formData.date,
+          time: formData.time,
+          guests: formData.guests,
+          paymentAmount: selectedTapchan?.price || "To'langan",
+          endTime: isNaN(bookingEnd) ? new Date().getTime() + (3 * 60 * 60 * 1000) : bookingEnd
+        }
+      }));
+    }
+
+    setIsModalOpen(false);
+    setShowToast(true);
+
+    setTimeout(() => {
+      setShowToast(false);
+    }, 4000);
+
+    setFormData({
+      fullName: '',
+      phone: '',
+      date: new Date().toISOString().split('T')[0],
+      time: '18:00',
+      guests: 6,
+      specialRequests: ''
+    });
+  };
+
+  return (
+    <section className="site-bg-pattern min-h-screen py-16 px-4 md:px-8 text-[#2C1E11] font-sans relative">
+
+      {/* Ant Design Style Top Alert Notification */}
+      {showToast && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] transition-all duration-300 animate-bounce">
+          <div className="bg-white border border-emerald-200 shadow-2xl rounded-2xl px-6 py-3.5 flex items-center gap-3 text-emerald-900 border-l-4 border-l-emerald-500">
+            <i className="fa-solid fa-circle-check text-emerald-500 text-xl"></i>
+            <span className="text-sm font-semibold tracking-wide">Xona band qilindi</span>
+          </div>
+        </div>
+      )}
+
+      <div className="max-w-[1240px] mx-auto relative z-10">
+
+        {/* Section Header */}
+        <div className="text-center max-w-[760px] mx-auto mb-14">
+          <h2 className="font-serif-title text-4xl sm:text-5xl md:text-6xl font-bold text-[#2C1E11] tracking-tight mb-4">
+            Tapchan Band Qilish
+          </h2>
+          <p className="text-[#7A6A58] text-base md:text-lg leading-relaxed">
+            Oila a'zolaringiz va do'stlaringiz bilan milliy taomlarimizdan bahramand bo'lish uchun o'zingizga ma'qul shinam tapchanni onlayn band qiling.
+          </p>
+        </div>
+
+        {/* Controls Bar */}
+        <div className="bg-[#FFFFFF] border border-[#E2D8C3] p-5 rounded-2xl shadow-sm mb-12 flex flex-wrap gap-4 items-center justify-between">
+
+          {/* Search Box */}
+          <div className="relative flex-1 min-w-[260px]">
+            <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-[#B2935B]"></i>
+            <input
+              type="text"
+              placeholder="Tapchan nomi bo'yicha qidiruv..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full py-3 pr-4 pl-11 bg-[#F9F7F1] border border-[#E2D8C3] rounded-xl outline-none focus:border-[#B2935B] focus:bg-white text-sm text-[#2C1E11] transition-all placeholder-[#A39585]"
+            />
+          </div>
+
+          {/* Filters Group */}
+          <div className="flex flex-wrap gap-3 flex-2 min-w-[300px] justify-end">
+
+            <select
+              value={capacityFilter}
+              onChange={(e) => setCapacityFilter(e.target.value)}
+              className="py-3 px-4 text-sm font-medium text-[#4A3525] bg-[#F9F7F1] border border-[#E2D8C3] rounded-xl outline-none hover:border-[#B2935B] focus:border-[#B2935B] cursor-pointer transition-all"
+            >
+              <option value="all">Barcha sig'imlar</option>
+              <option value="4">4 kishilik</option>
+              <option value="6">6 kishilik</option>
+              <option value="8">8 kishilik</option>
+              <option value="10">10+ kishilik</option>
+            </select>
+
+            <select
+              value={availabilityFilter}
+              onChange={(e) => setAvailabilityFilter(e.target.value)}
+              className="py-3 px-4 text-sm font-medium text-[#4A3525] bg-[#F9F7F1] border border-[#E2D8C3] rounded-xl outline-none hover:border-[#B2935B] focus:border-[#B2935B] cursor-pointer transition-all"
+            >
+              <option value="all">Barcha holatlar</option>
+              <option value="available">Bo'sh</option>
+              <option value="reserved">Band qilingan</option>
+            </select>
+
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="py-3 px-4 text-sm font-medium text-[#4A3525] bg-[#F9F7F1] border border-[#E2D8C3] rounded-xl outline-none hover:border-[#B2935B] focus:border-[#B2935B] cursor-pointer transition-all"
+            >
+              <option value="popular">Ommabopligi bo'yicha</option>
+              <option value="capacity-asc">Sig'imi: Kamdan ko'pga</option>
+              <option value="capacity-desc">Sig'imi: Ko'pdan kamga</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Tapchan Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredTapchans.length > 0 ? (
+            filteredTapchans.map((item) => {
+              const statusInfo = getTapchanRealStatus(item);
+              const isReserved = statusInfo.isReserved;
+
+              return (
+                <div
+                  key={item.id}
+                  className="bg-[#FFFFFF] border border-[#E2D8C3] rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col relative"
+                >
+                  <div className="relative h-[210px] overflow-hidden group">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+
+                    {/* Dynamic Status Badge at top of Card */}
+                    <div className={`absolute top-4 right-4 py-1.5 px-3 rounded-full text-xs font-bold backdrop-blur-md flex items-center gap-1.5 border shadow-sm transition-all ${isReserved
+                      ? "bg-rose-500/90 text-white border-rose-600"
+                      : "bg-emerald-500/90 text-white border-emerald-600"
+                      }`}>
+                      <span className={`w-2 h-2 rounded-full ${isReserved ? "bg-white animate-pulse" : "bg-white"}`}></span>
+                      {statusInfo.label}
+                    </div>
+
+                    {/* Price Tag */}
+                    <div className="absolute bottom-4 left-4 bg-[#2C1E11]/85 text-[#F3EFE0] py-1.5 px-3 rounded-lg text-xs font-medium backdrop-blur-sm">
+                      {item.price}
+                    </div>
+                  </div>
+
+                  <div className="p-6 flex flex-col flex-grow">
+                    <h3 className="font-serif-title text-xl font-bold text-[#2C1E11] mb-2">{item.name}</h3>
+
+                    {/* Booking Details Section */}
+                    {isReserved && statusInfo.details && (
+                      <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded-xl mb-3 text-xs text-[#4A3525] flex flex-col gap-1">
+                        <div className="font-semibold text-rose-700 flex items-center gap-1">
+                          <i className="fa-solid fa-clock text-rose-600"></i>
+                          <span>Band vaqti: {statusInfo.details.date} ({statusInfo.details.time})</span>
+                        </div>
+                        <div className="flex justify-between items-center text-[#7A6A58]">
+                          <span>Odamlar: {statusInfo.details.guests} kishi</span>
+                          <span className="font-medium text-[#2C1E11]">{statusInfo.details.paymentAmount}</span>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="grid grid-cols-2 gap-3 my-4 py-3 border-y border-dashed border-[#E2D8C3]">
+                      <div className="text-xs text-[#7A6A58] flex items-center gap-2">
+                        <i className="fa-solid fa-users text-[#B2935B] w-4 text-center"></i> {item.capacity} kishilik
+                      </div>
+                      <div className="text-xs text-[#7A6A58] flex items-center gap-2">
+                        <i className="fa-solid fa-eye text-[#B2935B] w-4 text-center"></i> {item.view}
+                      </div>
+                      <div className="text-xs text-[#7A6A58] flex items-center gap-2">
+                        <i className="fa-solid fa-couch text-[#B2935B] w-4 text-center"></i> Yumshoq ko'rpacha
+                      </div>
+                      <div className="text-xs text-[#7A6A58] flex items-center gap-2">
+                        <i className="fa-solid fa-wifi text-[#B2935B] w-4 text-center"></i> Bepul Wi-Fi
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3 mt-auto pt-2">
+                      <button
+                        disabled={isReserved}
+                        onClick={() => handleOpenModal(item.id)}
+                        className={`flex-2 py-3 px-5 rounded-xl text-sm font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${isReserved
+                          ? "bg-[#EFECE6] text-[#A39585] cursor-not-allowed border border-[#E2D8C3]"
+                          : "bg-[#B2935B] text-white hover:bg-[#8C6F36] shadow-sm hover:shadow"
+                          }`}
+                      >
+                        {isReserved ? 'Band Qilingan' : 'Band qilish'}
+                      </button>
+
+                      <button
+                        onClick={() => handleOpenModal(item.id)}
+                        className="flex-1 py-3 px-5 rounded-xl text-sm font-semibold border border-[#B2935B] text-[#8C6F36] hover:bg-[#B2935B]/10 transition-all duration-300"
+                      >
+                        Batafsil
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <p className="col-span-full text-center text-[#7A6A58] py-12">
+              So'rovingizga mos keladigan tapchanlar topilmadi.
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Modal */}
+      {isModalOpen && (
+        <div
+          onClick={handleCloseModal}
+          className="fixed inset-0 bg-[#2C1E11]/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity duration-300"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-[#FFFFFF] border border-[#E2D8C3] rounded-3xl max-w-[560px] w-full p-6 md:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto"
+          >
+            <div className="flex justify-between items-center mb-6 pb-4 border-b border-[#E2D8C3]">
+              <h3 className="font-serif-title text-2xl font-bold text-[#2C1E11]">Tapchan Band Qilish</h3>
+              <button
+                onClick={handleCloseModal}
+                className="text-[#7A6A58] hover:text-[#2C1E11] text-xl transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#F9F7F1]"
+              >
+                <i className="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="md:col-span-2 flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-[#4A3525]">Tanlangan Tapchan</label>
+                <select
+                  value={selectedTapchanId || ''}
+                  onChange={(e) => setSelectedTapchanId(Number(e.target.value))}
+                  className="p-3 bg-[#F9F7F1] border border-[#E2D8C3] rounded-xl outline-none text-sm focus:border-[#B2935B] text-[#2C1E11] transition-all"
+                  required
+                >
+                  {INITIAL_TAPCHANS.map((t) => {
+                    const st = getTapchanRealStatus(t);
+                    return (
+                      <option key={t.id} value={t.id} disabled={st.isReserved}>
+                        {t.name} ({t.capacity} kishilik) {st.isReserved ? "- [BAND]" : ""}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+
+              {selectedTapchanId && (
+                <div className="md:col-span-2 bg-[#F9F7F1] border border-[#E2D8C3] p-3 rounded-xl flex justify-between items-center text-xs">
+                  <span className="text-[#7A6A58]">To'lov sharti:</span>
+                  <span className="font-bold text-[#8C6F36]">
+                    {INITIAL_TAPCHANS.find(t => t.id === selectedTapchanId)?.price}
+                  </span>
+                </div>
+              )}
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-[#4A3525]">Ism va Familiya</label>
+                <input
+                  type="text"
+                  id="fullName"
+                  placeholder="masalan: Alisher Navoiy"
+                  value={formData.fullName}
+                  onChange={handleInputChange}
+                  className="p-3 bg-[#F9F7F1] border border-[#E2D8C3] rounded-xl outline-none text-sm focus:border-[#B2935B] text-[#2C1E11] transition-all placeholder-[#A39585]"
+                  required
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-[#4A3525]">Telefon Raqam</label>
+                <input
+                  type="tel"
+                  id="phone"
+                  placeholder="+998 90 123 45 67"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  className="p-3 bg-[#F9F7F1] border border-[#E2D8C3] rounded-xl outline-none text-sm focus:border-[#B2935B] text-[#2C1E11] transition-all placeholder-[#A39585]"
+                  required
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-[#4A3525]">Sana</label>
+                <input
+                  type="date"
+                  id="date"
+                  value={formData.date}
+                  onChange={handleInputChange}
+                  className="p-3 bg-[#F9F7F1] border border-[#E2D8C3] rounded-xl outline-none text-sm focus:border-[#B2935B] text-[#2C1E11] transition-all"
+                  required
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-[#4A3525]">Vaqt</label>
+                <input
+                  type="time"
+                  id="time"
+                  value={formData.time}
+                  onChange={handleInputChange}
+                  className="p-3 bg-[#F9F7F1] border border-[#E2D8C3] rounded-xl outline-none text-sm focus:border-[#B2935B] text-[#2C1E11] transition-all"
+                  required
+                />
+              </div>
+
+              <div className="md:col-span-2 flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-[#4A3525]">Mehmonlar Soni</label>
+                <input
+                  type="number"
+                  id="guests"
+                  min="1"
+                  max="20"
+                  value={formData.guests}
+                  onChange={handleInputChange}
+                  className="p-3 bg-[#F9F7F1] border border-[#E2D8C3] rounded-xl outline-none text-sm focus:border-[#B2935B] text-[#2C1E11] transition-all"
+                  required
+                />
+              </div>
+
+              <div className="md:col-span-2 flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-[#4A3525]">Qo'shimcha Istaklar</label>
+                <textarea
+                  id="specialRequests"
+                  rows="3"
+                  placeholder="Tug'ilgan kun bezatilishi, maxsus poyandoz va hokazo..."
+                  value={formData.specialRequests}
+                  onChange={handleInputChange}
+                  className="p-3 bg-[#F9F7F1] border border-[#E2D8C3] rounded-xl outline-none text-sm focus:border-[#B2935B] text-[#2C1E11] transition-all placeholder-[#A39585]"
+                ></textarea>
+              </div>
+
+              <button
+                type="submit"
+                className="md:col-span-2 mt-3 w-full py-3.5 px-6 bg-[#B2935B] text-white font-semibold rounded-xl hover:bg-[#8C6F36] shadow-sm hover:shadow transition-all duration-300"
+              >
+                Band qilishni tasdiqlash
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}

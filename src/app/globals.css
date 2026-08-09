@@ -1,0 +1,97 @@
+@import "tailwindcss";
+@import 'aos/dist/aos.css';
+
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+section {
+  scroll-margin-top: 80px;
+}
+
+.register-btn {
+  background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%);
+  color: #ffffff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 25px;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+  transition: all 0.3s ease;
+}
+
+.register-btn:hover {
+  background: linear-gradient(135deg, #e5c158 0%, #c59118 100%);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+  transform: translateY(-2px);
+}
+
+/* .navbar {
+  background: #A1883E !important;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+} */
+
+
+.nav-link {
+  color: #e0e0e0 !important;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+body {
+  background-color: #F3E9DA;
+}
+
+
+@keyframes heroZoom {
+  0% {
+    transform: scale(1.15);
+    /* Saytga kirganda rasm oldida (kattalashtirilgan) */
+  }
+
+  50% {
+    transform: scale(1);
+    /* Sekin orqaga kiradi */
+  }
+
+  100% {
+    transform: scale(1.15);
+    /* Yana sekin oldiga chiqadi */
+  }
+}
+
+/* Animatsiya Klassi */
+.animate-hero-zoom {
+  animation: heroZoom 12s ease-in-out infinite;
+}
+
+/* hero sectionning codlari */
+
+.hero-title {
+  font-family: "Playfair Display", serif;
+}
+
+.hero-title2 {
+  font-family: "Playfair Display", serif;
+}
+
+.hero-description {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* about sectionning codlari */
+
+.about-section {
+  background: linear-gradient(180deg,
+      #F8F4EC 0%,
+      #F4EBDD 55%,
+      #EFE3D1 100%);
+}

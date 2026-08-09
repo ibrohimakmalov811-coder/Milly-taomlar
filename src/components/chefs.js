@@ -1,0 +1,38 @@
+export const chefs = [
+    {
+        id: 1,
+        image: "https://media.licdn.com/dms/image/v2/D4D03AQE1vycceyTjHQ/profile-displayphoto-shrink_200_200/B4DZWJEzyIHkAY-/0/1741761496486?e=2147483647&v=beta&t=uiOrBFj0eJ7hBasaCFhSr-VtjogKcel4SUCMERN5WTQ",
+        firstName: "Aziz",
+        lastName: "Karimov",
+        age: 42,
+        experience: "20 Years",
+        rating: 4.9,
+    },
+    {
+        id: 2,
+        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStuOc6kTdEDc4qZ2nr6ImUmqbkL7TcX4mQReJFyBwgHwclkwtD2OZCDfM&s=10",
+        firstName: "Jasur",
+        lastName: "Rahmonov",
+        age: 37,
+        experience: "15 Years",
+        rating: 4.8,
+    },
+    {
+        id: 3,
+        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ31T7rzvVi9hAfXJbBXx6LNY8Vi_M8RwsOMaYShlunFBBXvIqG7Vm9DgO-&s=10",
+        firstName: "Bekzod",
+        lastName: "Tursunov",
+        age: 45,
+        experience: "23 Years",
+        rating: 5.0,
+    },
+    {
+        id: 4,
+        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiH4MhHiFVx1hax1ZsHDEwRr0osHzvIHvSolpE_TF0NBskZ1CWZxM3pr0&s=10",
+        firstName: "Sardor",
+        lastName: "Yuldashev",
+        age: 34,
+        experience: "12 Years",
+        rating: 4.7,
+    },
+];
