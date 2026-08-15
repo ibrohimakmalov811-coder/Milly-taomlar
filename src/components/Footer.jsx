@@ -5,15 +5,13 @@ import Link from 'next/link';
 export default function Footer() {
   return (
     <footer
-      data-aos="fade-up"
+
       className="bg-stone-900 text-stone-300 mt-10 py-8 border-t-2 border-amber-600 overflow-hidden"
     >
       <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4 text-center md:text-left">
 
         {/* Logo va shior */}
-        <div
-          data-aos="fade-right"
-          data-aos-delay="200"
+        <div 
           className="flex flex-col sm:flex-row items-center gap-3"
         >
           {/* Logo */}
@@ -39,8 +37,7 @@ export default function Footer() {
 
         {/* Telefon raqam */}
         <div
-          data-aos="zoom-in"
-          data-aos-duration="1000"
+
           className="flex items-center gap-2 bg-stone-800 px-4 py-2.5 rounded-lg border border-stone-700 hover:border-amber-500/50 transition-all duration-300"
         >
           <span className="text-amber-500 text-base">📞</span>
@@ -53,9 +50,8 @@ export default function Footer() {
         </div>
 
         {/* Mualliflik huquqi */}
-        <div
-          data-aos="fade-left"
-          data-aos-delay="200"
+        <div 
+
           className="text-center md:text-right text-xs text-stone-400 space-y-1"
         >
           <p>© 2026 "Milly Taomlar". Barcha huquqlar himoyalangan.</p>

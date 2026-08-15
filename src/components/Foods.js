@@ -130,5 +130,243 @@ export const foods = [
       { name: "Sarimsoqli Mayonez", price: 5000 },
       { name: "Pepsi (1L)", price: 14000 }
     ]
+  },
+  {
+    id: 11, category: "Qovurma", title: "Qozon Kabob (Qo'y go'shti)", price: 58000, oldPrice: "68,000 so'm",
+    desc: "Qozonda oltin rangga kirguncha qovurilgan yumshoq qo'y go'shti va qarsillama kartoshka.",
+    time: "50 min", portion: "2 kishi", level: "O'rta", rating: "5.0 (320+)",
+    img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80",
+    ingredients: ["Qo'y qovurg'asi", "Kartoshka", "Zira", "O'simlik yog'i"],
+    addonsTitle: "🥗 Salatlar va Non",
+    addons: [
+      { name: "Achichuk salati", price: 10000 },
+      { name: "Patir non", price: 8000 },
+      { name: "Coca-Cola (1.5L)", price: 16000 }
+    ]
+  },
+  {
+    id: 12, category: "Kabab", title: "Lula Shashlik", price: 18000, oldPrice: "22,000 so'm",
+    desc: "Yumshoq qiymadan ko'mir cho'g'ida pishirilgan va sirkali piyoz bilan tortiladigan shashlik.",
+    time: "20 min", portion: "1 kishi", level: "Oson", rating: "4.9 (210+)",
+    img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80",
+    ingredients: ["Qo'y va mol qiymasi", "Dumba", "Piyoz", "Ziravorlar"],
+    addonsTitle: "🌶 Sous va Piyoz",
+    addons: [
+      { name: "Sirkali piyoz", price: 4000 },
+      { name: "Tomat sousi", price: 5000 },
+      { name: "Yangi tandir non", price: 7000 }
+    ]
+  },
+  {
+    id: 13, category: "Kabab", title: "Jigar Shashlik", price: 16000, oldPrice: "19,000 so'm",
+    desc: "Mol jigari va sersuv dumba yog'i bilan navbatma-navbat terilib pishirilgan shashlik.",
+    time: "15 min", portion: "1 kishi", level: "Oson", rating: "4.8 (140+)",
+    img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80",
+    ingredients: ["Mol jigari", "Dumba yog'i", "Zira", "Piyoz"],
+    addonsTitle: "🍋 Piyoz va Choy",
+    addons: [
+      { name: "Sirkali piyoz", price: 4000 },
+      { name: "Ko'k choy", price: 8000 }
+    ]
+  },
+  {
+    id: 14, category: "Milliy Taom", title: "Choyxona Oshi (Qora osh)", price: 46000, oldPrice: "55,000 so'm",
+    desc: "Erkaklar choyxonasiga mos, ziravorlarga boy, sersuv va o'tkir ta'mli maxsus osh.",
+    time: "2 soat", portion: "6-8 kishi", level: "Qiyin", rating: "5.0 (450+)",
+    img: "https://odam.uz/upload/media/entries/2019-11/22/2132-entry-0-1574410996.jpg",
+    ingredients: ["Devzira guruch", "Qo'y go'shti", "Sariq sabzi", "Sarmisoq va Qalampir"],
+    addonsTitle: "🥗 Salatlar",
+    addons: [
+      { name: "Achichuk salati", price: 10000 },
+      { name: "Suzma", price: 12000 },
+      { name: "Qazi (bo'lak)", price: 15000 }
+    ]
+  },
+  {
+    id: 15, category: "Tandir Taom", title: "Tandir Go'sht (Qashqadaryo)", price: 68000, oldPrice: "80,000 so'm",
+    desc: "Archa shoxlari hidi anqib turgan, tandirda dumlangan nihoyatda yumshoq go'sht.",
+    time: "3 soat", portion: "1-2 kishi", level: "Qiyin", rating: "5.0 (500+)",
+    img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80",
+    ingredients: ["Qo'y go'shti", "Archa shoxlari", "Murch", "Tuz"],
+    addonsTitle: "🥗 Sirkali Piyoz va Non",
+    addons: [
+      { name: "Tandir non", price: 7000 },
+      { name: "Sirkali piyoz", price: 4000 }
+    ]
+  },
+  {
+    id: 16, category: "Sho'rva", title: "Kozacha Qozon Sho'rva", price: 34000, oldPrice: "40,000 so'm",
+    desc: "Kozachada sekin pishirilgan toza bulyonli, go'shtli va sabzavotli vitaminsimon sho'rva.",
+    time: "1 soat", portion: "1 kishi", level: "O'rta", rating: "4.8 (110+)",
+    img: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80",
+    ingredients: ["Qo'y qovurg'asi", "Kartoshka", "Sabzi", "Noxot"],
+    addonsTitle: "🥛 Qo'shimchalar",
+    addons: [
+      { name: "Smetana / Qatiq", price: 6000 },
+      { name: "Patir non", price: 8000 }
+    ]
+  },
+  {
+    id: 17, category: "Sho'rva", title: "Noxot Sharak", price: 36000, oldPrice: "42,000 so'm",
+    desc: "Uzoq vaqt qaynatilgan noxot va yumshoq mol go'shtidan tayyorlangan Samarkandcha taom.",
+    time: "2 soat", portion: "1 kishi", level: "O'rta", rating: "4.7 (90+)",
+    img: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80",
+    ingredients: ["Noxot", "Mol go'shti", "Piyoz", "Ziravorlar"],
+    addonsTitle: "🥗 Piyoz va Non",
+    addons: [
+      { name: "Sirkali piyoz", price: 4000 },
+      { name: "Yangi yopgan non", price: 7000 }
+    ]
+  },
+  {
+    id: 18, category: "Xamir Taom", title: "Qovurma Lag'mon", price: 39000, oldPrice: "45,000 so'm",
+    desc: "Cho'zma xamir, go'sht va sabzavotlarning tovada baland otashda qovurilgan variant.",
+    time: "30 min", portion: "1-2 kishi", level: "O'rta", rating: "4.8 (230+)",
+    img: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=800&q=80",
+    ingredients: ["Cho'zma xamir", "Mol go'shti", "Tuxum", "Bulg'or qalampiri"],
+    addonsTitle: "🌶 Lazjan",
+    addons: [
+      { name: "Lazjan achchiq sous", price: 4000 },
+      { name: "Achichuk salat", price: 10000 }
+    ]
+  },
+  {
+    id: 19, category: "Kabab", title: "Oramacha Shashlik (Rulet)", price: 20000, oldPrice: "24,000 so'm",
+    desc: "Yupqa mol go'shti va dumba yog'i rulet qilib o'ralib pishirilgan sersuv shashlik.",
+    time: "25 min", portion: "1 kishi", level: "Oson", rating: "4.9 (180+)",
+    img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80",
+    ingredients: ["Mol go'shti", "Dumba yog'i", "Zira va tuz"],
+    addonsTitle: "🌶 Souslar",
+    addons: [
+      { name: "Tomat sous", price: 5000 },
+      { name: "Sirkali piyoz", price: 4000 }
+    ]
+  },
+  {
+    id: 20, category: "Milliy Taom", title: "Beshbarmak", price: 58000, oldPrice: "68,000 so'm",
+    desc: "Xamir, ot go'shti va qazining mayin qaynatmasi, ustiga quyuq piyozli kayla bilan.",
+    time: "1.5 soat", portion: "2 kishi", level: "Qiyin", rating: "4.9 (160+)",
+    img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80",
+    ingredients: ["Yupqa xamir", "Ot go'shti", "Qazi", "Piyoz bulyoni"],
+    addonsTitle: "🥣 Bulyon",
+    addons: [
+      { name: "Sho'rva bulyoni (Kosa)", price: 6000 },
+      { name: "Ko'k choy", price: 8000 }
+    ]
+  },
+  {
+    id: 21, category: "Sho'rva", title: "Mastava", price: 30000, oldPrice: "35,000 so'm",
+    desc: "Guruch va to'g'ralgan go'sht-sabzavotlardan pishiriladigan quyuq va to'q tutuvchi sho'rva.",
+    time: "40 min", portion: "1 kishi", level: "O'rta", rating: "4.7 (120+)",
+    img: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80",
+    ingredients: ["Guruch", "Mol go'shti", "Kartoshka", "Piyoz va Pomidor"],
+    addonsTitle: "🥛 Qatiq va Non",
+    addons: [
+      { name: "Qatiq", price: 5000 },
+      { name: "Tandir non", price: 6000 }
+    ]
+  },
+  {
+    id: 22, category: "Sho'rva", title: "Moshxorda", price: 29000, oldPrice: "34,000 so'm",
+    desc: "Mosh, guruch va mol go'shtining an'anaviy aralashmasidan tayyorlanadigan milliy suyuq taom.",
+    time: "45 min", portion: "1 kishi", level: "O'rta", rating: "4.6 (80+)",
+    img: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80",
+    ingredients: ["Mosh", "Guruch", "Mol go'shti", "Qatiq"],
+    addonsTitle: "🥛 Qatiq",
+    addons: [
+      { name: "Qatiq / Suzma", price: 6000 },
+      { name: "Yangi non", price: 6000 }
+    ]
+  },
+  {
+    id: 23, category: "Qovurma", title: "Jiz-Biz (Qashqadaryocha)", price: 62000, oldPrice: "72,000 so'm",
+    desc: "Qo'y go'shti va qovurg'alarining o'z yog'ida qarsillab qovurilgan ko'rinishi.",
+    time: "40 min", portion: "2 kishi", level: "O'rta", rating: "4.9 (290+)",
+    img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80",
+    ingredients: ["Qo'y qovurg'asi", "Piyoz", "Tuz va Zira"],
+    addonsTitle: "🥗 Salatlar",
+    addons: [
+      { name: "Achichuk salati", price: 10000 },
+      { name: "Tuzlama (Assorti)", price: 14000 }
+    ]
+  },
+  {
+    id: 24, category: "Tandir Taom", title: "Varqi Somsa", price: 14000, oldPrice: "17,000 so'm",
+    desc: "Qat-qat mo'rt xamirli, go'sht va dumba yog'iga boy tandir somsa.",
+    time: "30 min", portion: "1 kishi", level: "O'rta", rating: "4.9 (380+)",
+    img: "https://uzbekistan.travel/storage/app/media/nargiza/cropped-images/somsa-0-0-0-0-1588923963.jpg",
+    ingredients: ["Varqi xamir", "Mol/Qo'y go'shti", "Dumba", "Kunjut"],
+    addonsTitle: "☕ Choy va Sous",
+    addons: [
+      { name: "Achchiq tomat sous", price: 4000 },
+      { name: "Ko'k choy (Choynak)", price: 8000 }
+    ]
+  },
+  {
+    id: 25, category: "Tandir Taom", title: "Qovoqli Somsa", price: 10000, oldPrice: "12,000 so'm",
+    desc: "Shirin qovoq, jizza va ziravorlar bilan to'ldirilgan parxez tandir somsa.",
+    time: "30 min", portion: "1 kishi", level: "Oson", rating: "4.7 (150+)",
+    img: "https://uzbekistan.travel/storage/app/media/nargiza/cropped-images/somsa-0-0-0-0-1588923963.jpg",
+    ingredients: ["Qatlama xamir", "Qovoq", "Jizza / Sariyog'", "Zira"],
+    addonsTitle: "☕ Choy",
+    addons: [
+      { name: "Limonli ko'k choy", price: 8000 }
+    ]
+  },
+
+  {
+    id: 26,
+    title: "Toshkent Palovi",
+    category: "Osh / Palov",
+    price: 45000,
+    oldPrice: "50 000 so'm",
+    rating: 4.9,
+    time: "40-50 min",
+    portion: "1 kishi",
+    level: "O'rtacha",
+    img: "/images/palov.jpg",
+    desc: "An'anaviy Toshkent usulida tayyorlangan shohona va mazali palov.",
+    fullDesc: "Toshkent palovi o'zining boy ta'mi va xushbo'yligi bilan mashhur. Maxsus guruch, sarxil qo'y go'shti, sariq va qizil sabzi hamda qazi va bedana tuxumlari bilan bezatiladi.",
+    ingredients: [
+      "Qo'y go'shti (yoki mol go'shti)",
+      "Devzira / Lazer guruchi",
+      "Sariq va qizil sabzi",
+      "Piyoz, noxat, mayiz",
+      "Zira, murch, tuz",
+      "Zaytun / O'simlik yog'i"
+    ],
+    recipe: [
+      "Qozonda yog'ni qizdirib, piyoz va go'shtni qizarguncha qovurib olinadi.",
+      "Sabzi qo'shilib, yumshagunga qadar qovuriladi va suv quyib zirvak qaynatiladi.",
+      "Noxat va mayiz solinib, zirvak past olovda 30-40 daqiqa qaynatiladi.",
+      "Guruch yaxshilab yuvilib, qozonga solinadi va suvi tortilguncha pishiriladi.",
+      "20-25 daqiqa dam beriladi va dasturxonga tortiladi."
+    ]
+  },
+  {
+    id: 27,
+    title: "Manti",
+    category: "Xamir taomlar",
+    price: 35000,
+    oldPrice: "40 000 so'm",
+    rating: 4.8,
+    time: "45-50 min",
+    portion: "1 kishi (5 dona)",
+    level: "O'rtacha",
+    img: "/images/manti.jpg",
+    desc: "Yumshoq xamir va sersuv qiymali an'anaviy manti.",
+    fullDesc: "Yupqa yoyilgan xamir ichiga to'g'ralgan go'sht va piyoz solinib, mantiqasqonda bug'da pishiriladigan mazali milliy taom.",
+    ingredients: [
+      "Un, suv, tuz (xamir uchun)",
+      "Lattali qo'y yoki mol go'shti",
+      "Piyoz, yog' (qiymasi uchun)",
+      "Murch, zira"
+    ],
+    recipe: [
+      "O'rtacha qattiqlikda xamir qorilib, 20 daqiqa dambel beriladi.",
+      "Go'sht va piyoz mayda to'rtburchak shaklda to'g'raladi va ziravorlar qo'shiladi.",
+      "Xamir yupqa yoyilib, kvadrat shaklida kesiladi va qiymalar solinib tugiladi.",
+      "Mantiqasqon manti manti listlariga yog' surtib joylanadi va 40-45 daqiqa bug'da pishiriladi."
+    ]
   }
 ];

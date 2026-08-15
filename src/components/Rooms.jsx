@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 
 const STORAGE_KEY = 'tapchan_bookings_v1';
+const CANCELLED_STORAGE_KEY = 'tapchan_cancelled_v1';
 
 const INITIAL_TAPCHANS = [
   {
@@ -127,14 +128,12 @@ export default function RoomBooking() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTapchanId, setSelectedTapchanId] = useState(null);
   const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('Xona band qilindi');
 
-  // Dastlab default qiymat bilan boshlaymiz (SSR uchun xavfsiz),
-  // keyin useEffect ichida localStorage'dan o'qib ustidan yozamiz.
   const [bookings, setBookings] = useState(DEFAULT_BOOKINGS);
+  const [cancelledIds, setCancelledIds] = useState({});
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // Har daqiqada "tick" o'zgarib, band muddati tugagan xonalarni
-  // avtomatik "bo'sh" holatiga qaytarish uchun komponentni qayta render qiladi
   const [tick, setTick] = useState(0);
 
   const [formData, setFormData] = useState({
@@ -146,12 +145,15 @@ export default function RoomBooking() {
     specialRequests: ''
   });
 
-  // 1) Komponent mount bo'lganda localStorage'dan bandlovlarni o'qish
   useEffect(() => {
     try {
       const saved = window.localStorage.getItem(STORAGE_KEY);
       if (saved) {
         setBookings(JSON.parse(saved));
+      }
+      const savedCancelled = window.localStorage.getItem(CANCELLED_STORAGE_KEY);
+      if (savedCancelled) {
+        setCancelledIds(JSON.parse(savedCancelled));
       }
     } catch (err) {
       console.error('localStorage o\'qishda xatolik:', err);
@@ -160,9 +162,8 @@ export default function RoomBooking() {
     }
   }, []);
 
-  // 2) bookings o'zgargan sayin localStorage'ga yozib borish
   useEffect(() => {
-    if (!isHydrated) return; // dastlabki hydration paytida qayta yozib yubormaslik uchun
+    if (!isHydrated) return;
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(bookings));
     } catch (err) {
@@ -170,8 +171,15 @@ export default function RoomBooking() {
     }
   }, [bookings, isHydrated]);
 
-  // 3) Har 30 soniyada "tick"ni yangilab, muddati tugagan bandlovlarni
-  // ekranga "bo'sh" deb qayta chiqarish
+  useEffect(() => {
+    if (!isHydrated) return;
+    try {
+      window.localStorage.setItem(CANCELLED_STORAGE_KEY, JSON.stringify(cancelledIds));
+    } catch (err) {
+      console.error('localStorage yozishda xatolik:', err);
+    }
+  }, [cancelledIds, isHydrated]);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setTick((t) => t + 1);
@@ -189,10 +197,23 @@ export default function RoomBooking() {
         return { isReserved: false, label: "Bu xona ishlatish uchun bo'sh", details: null };
       }
     }
-    if (tapchan.status === 'reserved') {
+    if (tapchan.status === 'reserved' && !cancelledIds[tapchan.id]) {
       return { isReserved: true, label: "Bu xona band qilindi", details: null };
     }
     return { isReserved: false, label: "Bu xona ishlatish uchun bo'sh", details: null };
+  };
+
+  const handleCancelBooking = (id) => {
+    setBookings(prev => {
+      const updated = { ...prev };
+      delete updated[id];
+      return updated;
+    });
+    setCancelledIds(prev => ({ ...prev, [id]: true }));
+
+    setToastMessage('Bandlov bekor qilindi');
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 4000);
   };
 
   const filteredTapchans = useMemo(() => {
@@ -220,7 +241,7 @@ export default function RoomBooking() {
       return b.popularity - a.popularity;
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery, capacityFilter, availabilityFilter, sortBy, bookings, tick]);
+  }, [searchQuery, capacityFilter, availabilityFilter, sortBy, bookings, cancelledIds, tick]);
 
   const handleOpenModal = (id) => {
     setSelectedTapchanId(id);
@@ -239,7 +260,6 @@ export default function RoomBooking() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Yangi dinamik bandlov yozuvini saqlash (state -> useEffect orqali localStorage'ga ham yoziladi)
     if (selectedTapchanId) {
       const selectedTapchan = INITIAL_TAPCHANS.find(t => t.id === selectedTapchanId);
       const bookingEnd = new Date(`${formData.date}T${formData.time}`).getTime() + (3 * 60 * 60 * 1000);
@@ -254,9 +274,17 @@ export default function RoomBooking() {
           endTime: isNaN(bookingEnd) ? new Date().getTime() + (3 * 60 * 60 * 1000) : bookingEnd
         }
       }));
+
+      setCancelledIds(prev => {
+        if (!prev[selectedTapchanId]) return prev;
+        const updated = { ...prev };
+        delete updated[selectedTapchanId];
+        return updated;
+      });
     }
 
     setIsModalOpen(false);
+    setToastMessage('Xona band qilindi');
     setShowToast(true);
 
     setTimeout(() => {
@@ -276,32 +304,28 @@ export default function RoomBooking() {
   return (
     <section className="site-bg-pattern min-h-screen py-16 px-4 md:px-8 text-[#2C1E11] font-sans relative">
 
-      {/* Ant Design Style Top Alert Notification */}
       {showToast && (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] transition-all duration-300 animate-bounce">
           <div className="bg-white border border-emerald-200 shadow-2xl rounded-2xl px-6 py-3.5 flex items-center gap-3 text-emerald-900 border-l-4 border-l-emerald-500">
             <i className="fa-solid fa-circle-check text-emerald-500 text-xl"></i>
-            <span className="text-sm font-semibold tracking-wide">Xona band qilindi</span>
+            <span className="text-sm font-semibold tracking-wide">{toastMessage}</span>
           </div>
         </div>
       )}
 
       <div className="max-w-[1240px] mx-auto relative z-10">
 
-        {/* Section Header */}
         <div className="text-center max-w-[760px] mx-auto mb-14">
-          <h2 className="font-serif-title text-4xl sm:text-5xl md:text-6xl font-bold text-[#2C1E11] tracking-tight mb-4">
-            Tapchan Band Qilish
+          <h2 className="font-serif-title text-4xl sm:text-5xl md:text-6xl font-bold text-[#725927] tracking-tight mb-4">
+            Xonalarni Band Qilish
           </h2>
           <p className="text-[#7A6A58] text-base md:text-lg leading-relaxed">
             Oila a'zolaringiz va do'stlaringiz bilan milliy taomlarimizdan bahramand bo'lish uchun o'zingizga ma'qul shinam tapchanni onlayn band qiling.
           </p>
         </div>
 
-        {/* Controls Bar */}
         <div className="bg-[#FFFFFF] border border-[#E2D8C3] p-5 rounded-2xl shadow-sm mb-12 flex flex-wrap gap-4 items-center justify-between">
 
-          {/* Search Box */}
           <div className="relative flex-1 min-w-[260px]">
             <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-[#B2935B]"></i>
             <input
@@ -313,7 +337,6 @@ export default function RoomBooking() {
             />
           </div>
 
-          {/* Filters Group */}
           <div className="flex flex-wrap gap-3 flex-2 min-w-[300px] justify-end">
 
             <select
@@ -350,7 +373,6 @@ export default function RoomBooking() {
           </div>
         </div>
 
-        {/* Tapchan Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredTapchans.length > 0 ? (
             filteredTapchans.map((item) => {
@@ -360,7 +382,7 @@ export default function RoomBooking() {
               return (
                 <div
                   key={item.id}
-                  className="bg-[#FFFFFF] border border-[#E2D8C3] rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col relative"
+                  className="bg-[#FDF6E2] border border-[#E2D8C3] rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col relative"
                 >
                   <div className="relative h-[210px] overflow-hidden group">
                     <img
@@ -369,7 +391,6 @@ export default function RoomBooking() {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
 
-                    {/* Dynamic Status Badge at top of Card */}
                     <div className={`absolute top-4 right-4 py-1.5 px-3 rounded-full text-xs font-bold backdrop-blur-md flex items-center gap-1.5 border shadow-sm transition-all ${isReserved
                       ? "bg-rose-500/90 text-white border-rose-600"
                       : "bg-emerald-500/90 text-white border-emerald-600"
@@ -378,7 +399,6 @@ export default function RoomBooking() {
                       {statusInfo.label}
                     </div>
 
-                    {/* Price Tag */}
                     <div className="absolute bottom-4 left-4 bg-[#2C1E11]/85 text-[#F3EFE0] py-1.5 px-3 rounded-lg text-xs font-medium backdrop-blur-sm">
                       {item.price}
                     </div>
@@ -387,17 +407,28 @@ export default function RoomBooking() {
                   <div className="p-6 flex flex-col flex-grow">
                     <h3 className="font-serif-title text-xl font-bold text-[#2C1E11] mb-2">{item.name}</h3>
 
-                    {/* Booking Details Section */}
-                    {isReserved && statusInfo.details && (
-                      <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded-xl mb-3 text-xs text-[#4A3525] flex flex-col gap-1">
-                        <div className="font-semibold text-rose-700 flex items-center gap-1">
-                          <i className="fa-solid fa-clock text-rose-600"></i>
-                          <span>Band vaqti: {statusInfo.details.date} ({statusInfo.details.time})</span>
-                        </div>
-                        <div className="flex justify-between items-center text-[#7A6A58]">
-                          <span>Odamlar: {statusInfo.details.guests} kishi</span>
-                          <span className="font-medium text-[#2C1E11]">{statusInfo.details.paymentAmount}</span>
-                        </div>
+                    {isReserved && (
+                      <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded-xl mb-3 text-xs text-[#4A3525] flex flex-col gap-2">
+                        {statusInfo.details && (
+                          <>
+                            <div className="font-semibold text-rose-700 flex items-center gap-1">
+                              <i className="fa-solid fa-clock text-rose-600"></i>
+                              <span>Band vaqti: {statusInfo.details.date} ({statusInfo.details.time})</span>
+                            </div>
+                            <div className="flex justify-between items-center text-[#7A6A58]">
+                              <span>Odamlar: {statusInfo.details.guests} kishi</span>
+                              <span className="font-medium text-[#2C1E11]">{statusInfo.details.paymentAmount}</span>
+                            </div>
+                          </>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleCancelBooking(item.id)}
+                          className="mt-1 w-full py-2 px-3 rounded-lg text-xs font-semibold bg-white text-rose-600 border border-rose-300 hover:bg-rose-50 transition-all duration-300 flex items-center justify-center gap-1.5"
+                        >
+                          <i className="fa-solid fa-ban"></i>
+                          Bandlovni bekor qilish
+                        </button>
                       </div>
                     )}
 
@@ -447,7 +478,6 @@ export default function RoomBooking() {
         </div>
       </div>
 
-      {/* Modal */}
       {isModalOpen && (
         <div
           onClick={handleCloseModal}

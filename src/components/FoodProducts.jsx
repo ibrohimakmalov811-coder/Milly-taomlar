@@ -16,8 +16,6 @@ export default function FoodProducts() {
   const [selectedAddons, setSelectedAddons] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-
-
   // Hydration xatosini oldini olish uchun
   const [hasMounted, setHasMounted] = useState(false);
 
@@ -62,9 +60,7 @@ export default function FoodProducts() {
     }
   }
 
-
   const handleBack = () => {
-    // 1. Savatda mahsulot bor-yo'qligini tekshiruv
     if (boughtProducts.length === 0) {
       messageApi.open({
         type: 'warning',
@@ -73,25 +69,22 @@ export default function FoodProducts() {
       return;
     }
 
-    // 2. Ant Design muvaffaqiyatli xabarini ko'rsatish
     messageApi.open({
       type: 'success',
       content: "Buyurtma muvaffaqiyatli amalga oshirildi! 😁",
-      duration: 2, // Xabar 2 soniya ko'rinib turadi
+      duration: 2,
     });
 
-    // 3. Zustand store'ni tozalash va sahifaga yo'naltirish
     setTimeout(() => {
       clearCart();
       router.push('/');
-    }, 1200); // Bildirishnoma o'qilishi uchun biroz kechikish
+    }, 1200);
   };
 
   const addonsSum = selectedAddons.reduce((acc, curr) => acc + curr, 0);
   const totalPrice = selectedFood ? selectedFood.price * qty + addonsSum : 0;
 
-
-  // --- ANIMATSIYA VARIANTLARI ---
+  // --- FRAMER MOTION ANIMATSIYA VARIANTLARI ---
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -113,8 +106,12 @@ export default function FoodProducts() {
 
   return (
     <div className="text-gray-800 font-sans p-5 md:p-10 min-h-screen overflow-x-hidden">
-      {/* 🌟 SARLAVHA ANIMATSIYASI */}
+      {contextHolder}
+
+      {/* 🌟 SARLAVHA ANIMATSIYASI (AOS: zoom-in) */}
       <motion.h1
+        data-aos="zoom-in"
+        data-aos-duration="1000"
         initial={{ opacity: 0, y: -40, scale: 0.9 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.8, type: 'spring', bounce: 0.4 }}
@@ -131,19 +128,24 @@ export default function FoodProducts() {
         id="menu-grid"
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 py-8 gap-7 max-w-[1400px] mx-auto"
       >
-        {foods?.slice(0, 8)?.map((item) => {
-          // Taom sevimlilarga qo'shilganligini tekshirish
+        {foods?.slice(0, 8)?.map((item, index) => {
           const isFav = hasMounted && favorites.some((fav) => fav.id === item.id);
-          // Taom savatga qo'shilganligini tekshirish
           const isBought = hasMounted && boughtProducts.some((bought) => bought.id === item.id);
+
+          // Juft va toq elementlar uchun AOS animatsiyasini almashtirish
+          const aosAnimation = index % 2 === 0 ? "fade-left" : "zoom-in";
 
           return (
             <motion.div
               key={item.id}
+              data-aos={aosAnimation}
+              data-aos-delay={index * 100}
+              data-aos-duration="800"
               variants={cardVariants}
               whileHover={{ scale: 1.03, y: -8 }}
               whileTap={{ scale: 0.98 }}
-              className="bg-[#fdf6e2] rounded-2xl overflow-hidden shadow-lg border-2 border-transparent hover:border-[#A08141] hover:shadow-2xl transition-shadow duration-300 flex flex-col relative"
+              onClick={() => openModal(item.id)}
+              className="bg-[#fdf6e2] rounded-2xl overflow-hidden shadow-lg border-2 border-transparent hover:border-[#A08141] hover:shadow-2xl transition-shadow duration-300 flex flex-col relative cursor-pointer"
             >
               <div className="relative h-48 overflow-hidden">
                 <span className="absolute top-3 left-3 z-10 bg-[#A08141]/90 text-white text-[11px] font-semibold px-3 py-1 rounded-full uppercase backdrop-blur-md">
@@ -155,7 +157,7 @@ export default function FoodProducts() {
                   whileHover={{ scale: 1.25 }}
                   whileTap={{ scale: 0.85 }}
                   onClick={(e) => {
-                    e.stopPropagation(); // Modal ochilib ketmasligi uchun
+                    e.stopPropagation();
                     toggleFavorite(item);
                   }}
                   className="absolute top-3 right-3 z-20 p-2.5 rounded-full shadow-md flex items-center justify-center bg-white/80 backdrop-blur-sm"
@@ -210,26 +212,17 @@ export default function FoodProducts() {
                         toggleShop(item);
                       }}
                       title={isBought ? "Savatdan olib tashlash" : "Savatga qo'shish"}
-                      className={`p-2.5 rounded-xl transition-colors shadow-sm flex items-center justify-center ${isBought
-                        ? 'bg-green-600 hover:bg-green-700 text-white'
-                        : 'bg-[#e2d2b4] hover:bg-[#d4c09c] text-[#725927]'
-                        }`}
+                      className={`p-2.5 rounded-xl transition-colors shadow-sm flex items-center justify-center ${
+                        isBought
+                          ? 'bg-green-600 hover:bg-green-700 text-white'
+                          : 'bg-[#e2d2b4] hover:bg-[#d4c09c] text-[#725927]'
+                      }`}
                     >
                       {isBought ? (
                         <HiShoppingCart className="w-5 h-5" />
                       ) : (
                         <HiOutlineShoppingCart className="w-5 h-5" />
                       )}
-                    </motion.button>
-
-                    {/* ZAKAZ QILISH (MODAL OCHISH) TUGMASI */}
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => openModal(item.id)}
-                      className="bg-[#A08141] hover:bg-[#886d34] text-white text-xs md:text-sm font-semibold py-2.5 px-3 rounded-xl transition-colors shadow-sm"
-                    >
-                      Batafsil
                     </motion.button>
                   </div>
                 </div>
@@ -250,6 +243,8 @@ export default function FoodProducts() {
             onClick={closeModal}
           >
             <motion.div
+              data-aos="zoom-in"
+              data-aos-duration="300"
               initial={{ scale: 0.7, opacity: 0, y: 30 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.7, opacity: 0, y: 30 }}

@@ -1,25 +1,36 @@
-'use client'
+'use client';
 import { CgShoppingCart } from "react-icons/cg";
 import { AiOutlineHeart } from "react-icons/ai";
-import { HiMenuAlt3, HiX } from "react-icons/hi"; // Burger va Close ikonkasi
+import { HiMenuAlt3, HiX } from "react-icons/hi";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useFavoriteStore } from "@/store/Favorities";
 import { useBoughtStore } from "@/store/BoughtProducts";
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 const Navbar = () => {
   const favorites = useFavoriteStore((state) => state.favorites);
   const buyProductsLength = useBoughtStore((state) => state.boughtProducts);
 
   const [mounted, setMounted] = useState(false);
-  const [isOpen, setIsOpen] = useState(false); // Mobil menyu holati
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    // AOS faqat klient tarafda ishga tushishi kerak
+    AOS.init({
+      duration: 700,
+      once: true,
+    });
   }, []);
 
-  // Menyu havolalari ro'yxati
+  // Hydration mismatch xatosini oldini olish uchun komponent to'liq mount bo'lishini kutamiz
+  if (!mounted) {
+    return null;
+  }
+
   const navLinks = [
     { href: "#home", label: "Asosiy" },
     { href: "#about", label: "Biz haqimizda" },
@@ -49,7 +60,7 @@ const Navbar = () => {
               />
             </Link>
 
-            
+            {/* Links */}
             <ul
               data-aos="zoom-in"
               data-aos-duration="700"
@@ -79,7 +90,7 @@ const Navbar = () => {
                 </span>
               </div>
 
-              {/* Icons (Favorites, Cart, & Burger Menu) */}
+              {/* Icons */}
               <div className="flex items-center gap-3 sm:gap-5">
 
                 {/* Favorites Icon */}
@@ -87,7 +98,7 @@ const Navbar = () => {
                   <Link className="flex items-center flex-col relative" href={"/favorities"}>
                     <div className="relative">
                       <AiOutlineHeart className="text-xl sm:text-2xl text-[#fff] group-hover:text-[#FFE680] group-hover:drop-shadow-[0_0_10px_rgba(255,230,128,0.7)] group-hover:-translate-y-0.5 duration-300 transition-all" />
-                      {mounted && favorites?.length > 0 && (
+                      {favorites?.length > 0 && (
                         <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full border-2 border-white px-1">
                           {favorites.length}
                         </span>
@@ -104,7 +115,7 @@ const Navbar = () => {
                   <Link className="flex items-center flex-col relative" href={"/buyPage"}>
                     <div className="relative">
                       <CgShoppingCart className="text-xl sm:text-2xl text-[#fff] group-hover:text-[#FFE680] group-hover:drop-shadow-[0_0_10px_rgba(255,230,128,0.7)] group-hover:-translate-y-0.5 duration-300 transition-all" />
-                      {mounted && buyProductsLength?.length > 0 && (
+                      {buyProductsLength?.length > 0 && (
                         <span className="absolute -top-2 -right-2 bg-yellow-300 text-black text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full border-2 border-white px-1">
                           {buyProductsLength.length}
                         </span>
@@ -116,7 +127,7 @@ const Navbar = () => {
                   </Link>
                 </div>
 
-                {/* Burger Menu Button (Mobil ekranlar uchun) */}
+                {/* Burger Menu Button */}
                 <button
                   onClick={() => setIsOpen(!isOpen)}
                   className="lg:hidden text-white hover:text-[#FFE680] transition-colors duration-300 p-1 focus:outline-none"
@@ -136,7 +147,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile Dropdown Menu (Tepadan tushadigan qismi) */}
+        {/* Mobile Dropdown Menu */}
         <div
           className={`lg:hidden transition-all duration-300 ease-in-out overflow-hidden bg-[#8C7433]/95 backdrop-blur-lg border-t border-white/10 ${isOpen ? "max-h-[400px] opacity-100 py-4" : "max-h-0 opacity-0 py-0"
             }`}
@@ -146,7 +157,7 @@ const Navbar = () => {
               <li key={link.href} className="w-full text-center">
                 <Link
                   href={link.href}
-                  onClick={() => setIsOpen(false)} // Bosilganda menyu yopiladi
+                  onClick={() => setIsOpen(false)}
                   className="block py-2 text-white hover:text-[#FFE680] font-medium text-[15px] transition-colors duration-200 border-b border-white/12 w-full"
                 >
                   {link.label}
