@@ -108,15 +108,18 @@ const INITIAL_TAPCHANS = [
   }
 ];
 
-// Boshlang'ich (default) bandlovlar — localStorage bo'sh bo'lsa shu ishlatiladi
-const DEFAULT_BOOKINGS = {
-  4: {
-    date: new Date().toISOString().split('T')[0],
-    time: '18:00',
-    guests: 4,
-    paymentAmount: "Bepul band qilish",
-    endTime: new Date(Date.now() + 1 * 20 * 20 * 1000).getTime()
-  }
+// Boshlang'ich (default) bandlovlar — compute on client after hydration to avoid SSR/client mismatch
+const makeDefaultBookings = () => {
+  const endTime = Date.now() + 1 * 20 * 20 * 1000; // same duration as before
+  return {
+    4: {
+      date: new Date().toISOString().split('T')[0],
+      time: '18:00',
+      guests: 4,
+      paymentAmount: "Bepul band qilish",
+      endTime: endTime
+    }
+  };
 };
 
 export default function RoomBooking() {
@@ -130,7 +133,7 @@ export default function RoomBooking() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('Xona band qilindi');
 
-  const [bookings, setBookings] = useState(DEFAULT_BOOKINGS);
+  const [bookings, setBookings] = useState({});
   const [cancelledIds, setCancelledIds] = useState({});
   const [isHydrated, setIsHydrated] = useState(false);
 
@@ -150,6 +153,9 @@ export default function RoomBooking() {
       const saved = window.localStorage.getItem(STORAGE_KEY);
       if (saved) {
         setBookings(JSON.parse(saved));
+      } else {
+        // If nothing saved yet, create a default booking on the client only
+        setBookings(makeDefaultBookings());
       }
       const savedCancelled = window.localStorage.getItem(CANCELLED_STORAGE_KEY);
       if (savedCancelled) {
