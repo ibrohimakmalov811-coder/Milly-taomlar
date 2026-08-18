@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { foods } from './Foods';
 import { useFavoriteStore } from '../store/Favorities';
@@ -8,24 +9,24 @@ import { useBoughtStore } from '@/store/BoughtProducts';
 import { HiHeart, HiOutlineHeart, HiShoppingCart, HiOutlineShoppingCart } from "react-icons/hi";
 import { message } from 'antd';
 
-
 export default function FoodProducts() {
+  const router = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
   const [selectedFood, setSelectedFood] = useState(null);
   const [qty, setQty] = useState(1);
   const [selectedAddons, setSelectedAddons] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Hydration xatosini oldini olish uchun
+  // Hydration xatosining oldini olish uchun
   const [hasMounted, setHasMounted] = useState(false);
 
-  // Zustand store'dan holatlarni olamiz
+  // Zustand store'dan holat va funksiyalarni olish
   const favorites = useFavoriteStore((state) => state.favorites);
   const toggleFavorite = useFavoriteStore((state) => state.toggleFavorite);
 
-  // Savat (BoughtStore) integratsiyasi
   const boughtProducts = useBoughtStore((state) => state.boughtProducts);
   const toggleShop = useBoughtStore((state) => state.toggleShop);
+  const clearCart = useBoughtStore((state) => state.clearCart);
 
   useEffect(() => {
     setHasMounted(true);
@@ -76,7 +77,10 @@ export default function FoodProducts() {
     });
 
     setTimeout(() => {
-      clearCart();
+      if (typeof clearCart === 'function') {
+        clearCart();
+      }
+      closeModal();
       router.push('/');
     }, 1200);
   };
@@ -84,7 +88,7 @@ export default function FoodProducts() {
   const addonsSum = selectedAddons.reduce((acc, curr) => acc + curr, 0);
   const totalPrice = selectedFood ? selectedFood.price * qty + addonsSum : 0;
 
-  // --- FRAMER MOTION ANIMATSIYA VARIANTLARI ---
+  // ANIMATSIYA VARIANTLARI
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -108,7 +112,6 @@ export default function FoodProducts() {
     <div className="text-gray-800 font-sans p-5 md:p-10 min-h-screen overflow-x-hidden">
       {contextHolder}
 
-      {/* 🌟 SARLAVHA ANIMATSIYASI (AOS: zoom-in) */}
       <motion.h1
         data-aos="zoom-in"
         data-aos-duration="1000"
@@ -120,7 +123,6 @@ export default function FoodProducts() {
         🍲 Milliy Taomlar Menusi
       </motion.h1>
 
-      {/* 🍲 KARTOCHKALAR GRID-KONTEYNERI */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -131,8 +133,6 @@ export default function FoodProducts() {
         {foods?.slice(0, 8)?.map((item, index) => {
           const isFav = hasMounted && favorites.some((fav) => fav.id === item.id);
           const isBought = hasMounted && boughtProducts.some((bought) => bought.id === item.id);
-
-          // Juft va toq elementlar uchun AOS animatsiyasini almashtirish
           const aosAnimation = index % 2 === 0 ? "fade-left" : "zoom-in";
 
           return (
@@ -152,7 +152,6 @@ export default function FoodProducts() {
                   {item.category}
                 </span>
 
-                {/* ❤️ YURAKCHA TUGMASI (FAVORITES) */}
                 <motion.button
                   whileHover={{ scale: 1.25 }}
                   whileTap={{ scale: 0.85 }}
@@ -203,7 +202,6 @@ export default function FoodProducts() {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    {/* 🛒 SAVATGA QO'SHISH TUGMASI */}
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
@@ -232,7 +230,6 @@ export default function FoodProducts() {
         })}
       </motion.div>
 
-      {/* 🪟 MODAL DARCHA ANIMATSIYASI */}
       <AnimatePresence>
         {isModalOpen && selectedFood && (
           <motion.div

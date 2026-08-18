@@ -19,7 +19,7 @@ const INITIAL_TAPCHANS = [
   {
     id: 2,
     name: "Buxoro Oila VIP Tapchan",
-    capacity: 6,
+    capacity: 6,    
     view: "Yashil bog' manzarasi",
     status: "available",
     price: "Bepul band qilish",

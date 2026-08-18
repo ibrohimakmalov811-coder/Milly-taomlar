@@ -1,5 +1,7 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 export default function Contact() {
     const [formData, setFormData] = useState({
@@ -11,6 +13,13 @@ export default function Contact() {
 
     // Custom Toast Alert holati (type: 'success' | 'error')
     const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+
+    useEffect(() => {
+        AOS.init({
+            duration: 800,
+            once: true,
+        });
+    }, []);
 
     // Toast ko'rsatish funksiyasi
     const showToast = (message, type = 'success') => {
@@ -56,14 +65,14 @@ export default function Contact() {
 
     return (
         <section className='container mx-auto relative'>
-            <h2 className="text-center text-[#725927] mt-15 text-3xl md:text-5xl font-bold drop-shadow-sm">
+            <h2 data-aos="fade-down" className="text-center text-[#725927] mt-15 text-3xl md:text-5xl font-bold drop-shadow-sm">
                 Aloqaga Chiqish
             </h2>
             <div className='min-h-[70vh] pt-10 px-4 sm:px-6 lg:px-8 flex items-center justify-center'>
-                <div className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-2xl shadow-xl overflow-hidden border border-amber-200">
+                <div data-aos="zoom-in" data-aos-delay="100" className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-2xl shadow-xl overflow-hidden border border-amber-200">
 
                     {/* Chap taraf: Milliy taklif va ma'lumotlar */}
-                    <div className="bg-gradient-to-br from-amber-700 to-amber-900 text-white p-8 flex flex-col justify-between">
+                    <div data-aos="fade-right" data-aos-delay="200" className="bg-gradient-to-br from-amber-700 to-amber-900 text-white p-8 flex flex-col justify-between">
                         <div>
                             <span className="text-amber-300 text-sm font-semibold tracking-widest uppercase">
                                 Oshingiz halol bo'lsin!
@@ -98,7 +107,7 @@ export default function Contact() {
                     </div>
 
                     {/* O'ng taraf: Forma */}
-                    <div className="p-8 flex flex-col justify-center">
+                    <div data-aos="fade-left" data-aos-delay="200" className="p-8 flex flex-col justify-center">
                         <h3 className="text-2xl font-bold text-stone-800 mb-2 font-serif">
                             Bizga xabar yo'llang
                         </h3>

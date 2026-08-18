@@ -1,3 +1,4 @@
+import { AuthProvider } from "@/context/AuthContext";
 import { Inter } from 'next/font/google';
 import { AOSInit } from '@/components/AOSInit';
 import './globals.css';
@@ -5,7 +6,7 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'Mening Saytim',
+  title: 'Milly taomlar',
   description: 'Next.js va AOS yordamida yaratilgan sayt',
 };
 
@@ -25,7 +26,7 @@ export default function RootLayout({ children }) {
         />
 
   
-        <main>{children}</main>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

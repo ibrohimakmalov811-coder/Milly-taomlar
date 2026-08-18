@@ -1,12 +1,13 @@
 'use client'
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect } from "react";
 import {
     FaAward,
     FaUsers,
     FaLeaf,
-    FaMedal,
 } from "react-icons/fa";
 import { GiCook, GiHotMeal, GiMeal } from "react-icons/gi";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const FEATURES = [
     { icon: GiHotMeal, label: "Milliy retseptlar" },
@@ -20,49 +21,17 @@ const STATS = [
     { icon: FaLeaf, value: "120+", label: "Milliy taom retseptlari" },
 ];
 
-function useReveal(threshold = 0.2) {
-    const ref = useRef(null);
-    const [visible, setVisible] = useState(false);
-
-    useEffect(() => {
-        const node = ref.current;
-        if (!node) return;
-
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    setVisible(true);
-                    observer.unobserve(node);
-                }
-            },
-            { threshold }
-        );
-
-        observer.observe(node);
-        return () => observer.disconnect();
-    }, [threshold]);
-
-    return [ref, visible];
-}
-
-function Reveal({ as: Tag = "div", delay = 0, className = "", children }) {
-    const [ref, visible] = useReveal();
-    return (
-        <Tag
-            ref={ref}
-            className={`transition-all duration-700 ease-out ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                } ${className}`}
-            style={{ transitionDelay: `${delay}ms` }}
-        >
-            {children}
-        </Tag>
-    );
-}
-
 export default function About() {
+    useEffect(() => {
+        AOS.init({
+            duration: 800,
+            once: true,
+        });
+    }, []);
+
     return (
-        <section className="about-section min-h-screen w-ful bg-[#F4EBDD] px-6 py-20 md:px-12 lg:px-20">
-            <Reveal className="flex flex-col items-center text-center">
+        <section className="about-section min-h-screen w-full bg-[#F4EBDD] px-6 py-20 md:px-12 lg:px-20">
+            <div data-aos="fade-up" className="flex flex-col items-center text-center">
                 <div className="flex items-center gap-3">
                     <span className="h-px w-8 bg-[#D4A72C]" />
                     <span className="text-sm font-semibold tracking-[0.35em] text-[#D4A72C] uppercase">
@@ -80,11 +49,11 @@ export default function About() {
                     <span className="h-2 w-2 rotate-45 bg-[#D4A72C]" />
                     <span className="h-[2px] w-10 rounded-full bg-[#D4A72C]" />
                 </div>
-            </Reveal>
+            </div>
 
             <div className="mt-16 flex flex-col gap-12 lg:flex-row lg:items-start lg:gap-16">
                 {/* ---------- Left: text ---------- */}
-                <Reveal delay={100} className="w-full lg:w-1/2">
+                <div data-aos="fade-right" data-aos-delay="100" className="w-full lg:w-1/2">
                     <div className="space-y-6 text-[17px] leading-relaxed text-[#2F2F2F]">
                         <p>
                             Biz <span className="font-bold text-[#4B352A]">1990-yilda</span>{" "}
@@ -144,23 +113,25 @@ export default function About() {
                             his qildirishdir.
                         </p>
                     </div>
-                </Reveal>
+                </div>
 
                 {/* ---------- Right: image + feature cards ---------- */}
-                <Reveal delay={200} className="w-full lg:w-1/2">
+                <div data-aos="fade-left" data-aos-delay="200" className="w-full lg:w-1/2">
                     <div className="group relative overflow-hidden rounded-3xl border-2 border-[#D4A72C]/40 shadow-xl shadow-[#4B352A]/10">
                         <img
                             src="/about-image.png"
-                            alt="Eski O'zbek milliy choyxonasi — yog'och ustunlar, milliy naqshlar, supada dasturxon atrofida choy va osh ichayotgan qariyalar, orqa fonda tandir va samovar"
+                            alt="Eski O'zbek milliy choyxonasi"
                             className="h-[320px] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 md:h-[420px]"
                         />
                     </div>
 
                     {/* feature cards */}
                     <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-                        {FEATURES.map(({ icon: Icon, label }) => (
+                        {FEATURES.map(({ icon: Icon, label }, index) => (
                             <div
                                 key={label}
+                                data-aos="zoom-in"
+                                data-aos-delay={300 + index * 100}
                                 className="flex flex-col items-center gap-2 rounded-xl border border-[#D4A72C]/25 bg-white p-4 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
                             >
                                 <Icon className="text-2xl text-[#D4A72C]" />
@@ -170,15 +141,17 @@ export default function About() {
                             </div>
                         ))}
                     </div>
-                </Reveal>
+                </div>
             </div>
 
             {/* ---------- Stats ---------- */}
-            <Reveal delay={300} className="mt-20">
+            <div data-aos="fade-up" data-aos-delay="300" className="mt-20">
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-                    {STATS.map(({ icon: Icon, value, label }) => (
+                    {STATS.map(({ icon: Icon, value, label }, index) => (
                         <div
                             key={label}
+                            data-aos="zoom-in"
+                            data-aos-delay={400 + index * 100}
                             className="group relative flex flex-col items-center gap-3 rounded-2xl border-2 border-[#D4A72C]/30 bg-white p-8 text-center shadow-md transition-all duration-300 hover:-translate-y-2 hover:border-[#D4A72C] hover:shadow-xl"
                         >
                             <Icon className="text-3xl text-[#D4A72C] transition-transform duration-300 group-hover:scale-110" />
@@ -191,7 +164,7 @@ export default function About() {
                         </div>
                     ))}
                 </div>
-            </Reveal>
+            </div>
         </section>
     );
 }

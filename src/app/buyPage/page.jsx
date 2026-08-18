@@ -1,9 +1,12 @@
 'use client';
 
+import { useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import { useBoughtStore } from '@/store/BoughtProducts';
 import { useRouter } from 'next/navigation';
 import { message } from 'antd';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 const BuyPage = () => {
     const boughtProducts = useBoughtStore((state) => state.boughtProducts);
@@ -13,6 +16,14 @@ const BuyPage = () => {
 
     // Ant Design message uchun hook
     const [messageApi, contextHolder] = message.useMessage();
+
+    // AOS ni ishga tushirish
+    useEffect(() => {
+        AOS.init({
+            duration: 800,
+            once: true,
+        });
+    }, []);
 
     const handleBack = () => {
         // 1. Savatda mahsulot bor-yo'qligini tekshiruv
@@ -46,17 +57,27 @@ const BuyPage = () => {
             {contextHolder}
 
             <Navbar />
-            <h1 className="text-3xl font-bold text-[#725927] mt-30 text-center mb-6">Xaridlaringiz</h1>
+            <h1 
+                data-aos="fade-down" 
+                className="text-3xl font-bold text-[#725927] mt-30 text-center mb-6"
+            >
+                Xaridlaringiz
+            </h1>
 
             {boughtProducts.length === 0 ? (
-                <div className="text-center py-10 text-gray-500">
+                <div 
+                    data-aos="fade-up" 
+                    className="text-center py-10 text-gray-500"
+                >
                     Savatingiz hozircha bo'sh.
                 </div>
             ) : (
                 <div className="flex flex-col gap-4">
-                    {boughtProducts.map((item) => (
+                    {boughtProducts.map((item, index) => (
                         <div
                             key={item.id}
+                            data-aos="fade-up"
+                            data-aos-delay={index * 100}
                             className="flex items-center justify-between bg-[#fdf6e2] p-4 rounded-xl border border-[#A08141]/30 shadow-sm"
                         >
                             <div className="flex items-center gap-4">
@@ -82,7 +103,11 @@ const BuyPage = () => {
                         </div>
                     ))}
 
-                    <div className="mt-6 p-4 bg-[#f5eace] rounded-xl flex items-center justify-between border border-[#A08141]/40">
+                    <div 
+                        data-aos="fade-up" 
+                        data-aos-delay="200" 
+                        className="mt-6 p-4 bg-[#f5eace] rounded-xl flex items-center justify-between border border-[#A08141]/40"
+                    >
                         <div>
                             <span className="text-sm text-gray-600">Jami:</span>
                             <p className="text-2xl font-bold text-[#d9381e]">

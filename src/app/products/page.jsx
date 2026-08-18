@@ -2,11 +2,20 @@
 import { foods } from "@/components/Foods";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const Products = () => {
   // Tanlangan taom holati (Modal uchun)
   const [selectedFood, setSelectedFood] = useState(null);
+
+  useEffect(() => {
+    AOS.init({
+      duration: 800,
+      once: true,
+    });
+  }, []);
 
   // Modalni yopish funksiyasi
   const closeModal = () => setSelectedFood(null);
@@ -17,7 +26,7 @@ const Products = () => {
         <Navbar />
 
         {/* Tepa Sarlavha qismi */}
-        <div className="pt-28 sm:pt-36 pb-6 px-4 sm:px-6 text-center">
+        <div className="pt-28 sm:pt-36 pb-6 px-4 sm:px-6 text-center" data-aos="fade-down">
           <span className="inline-block bg-[#8B0000]/10 text-[#8B0000] text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-3 border border-[#8B0000]/20">
             Lazzatli & Haqiqiy
           </span>
@@ -39,9 +48,11 @@ const Products = () => {
 
         {/* Taomlar Grid Ro'yxati */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4 sm:p-6 max-w-7xl mx-auto">
-          {foods.map((item) => (
+          {foods.map((item, index) => (
             <div
               key={item.id}
+              data-aos="fade-up"
+              data-aos-delay={(index % 4) * 100}
               className="group relative bg-[#FDF6E2] rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-[#F0E6D2] hover:-translate-y-1 flex flex-col justify-between"
             >
               <div>
@@ -98,7 +109,7 @@ const Products = () => {
 
                 <button
                   onClick={() => setSelectedFood(item)}
-                  className="bg-gradient-to-r from-[#D4AF37] to-[#B8860B] hover:from-[#B8860B] hover:to-[#966F0D] text-white text-xs sm:text-sm font-semibold px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl shadow-md hover:shadow-lg active:scale-95 transition-all duration-200"
+                  className="bg-gradient-to-r from-[#D4AF37] to-[#B8860B] hover:from-[#B8860B] hover:to-[#966F0D] text-white text-xs sm:text-sm font-semibold px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl shadow-md hover:shadow-lg active:scale-95 transition-all duration-200 cursor-pointer"
                 >
                   Batafsil
                 </button>
@@ -111,7 +122,11 @@ const Products = () => {
       {/* BATAFSIL MODAL OYNASI */}
       {selectedFood && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col border border-[#D4AF37]/30">
+          <div 
+            data-aos="zoom-in" 
+            data-aos-duration="300"
+            className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col border border-[#D4AF37]/30"
+          >
             
             {/* Modal Sarlavhasi / Rasm */}
             <div className="relative h-56 sm:h-64 w-full shrink-0">
@@ -125,7 +140,7 @@ const Products = () => {
               {/* Yopish tugmasi */}
               <button
                 onClick={closeModal}
-                className="absolute top-4 right-4 bg-black/50 hover:bg-black/80 text-white w-9 h-9 rounded-full flex items-center justify-center transition-all text-lg"
+                className="absolute top-4 right-4 bg-black/50 hover:bg-black/80 text-white w-9 h-9 rounded-full flex items-center justify-center transition-all text-lg cursor-pointer"
               >
                 ✕
               </button>
@@ -206,7 +221,7 @@ const Products = () => {
             <div className="p-4 bg-stone-50 border-t border-stone-200 flex justify-end">
               <button
                 onClick={closeModal}
-                className="bg-[#2C1810] hover:bg-black text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-all"
+                className="bg-[#2C1810] hover:bg-black text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-all cursor-pointer"
               >
                 Yopish
               </button>

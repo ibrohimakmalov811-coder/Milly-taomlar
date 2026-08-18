@@ -7,47 +7,50 @@ import Navbar from '@/components/Navbar'
 import Rooms from '@/components/Rooms'
 import Service from '@/components/Service'
 import Staffs from '@/components/Staffs'
+import AuthGuard from '@/components/AuthGuard'
 import React from 'react'
 
 
 const Home = () => {
   return (
-    <div>
-      <Navbar />
+    <AuthGuard>
+      <div>
+        <Navbar />
 
-      <section id="home">
-        <Header />
-      </section>
+        <section id="home">
+          <Header />
+        </section>
 
-      <section id="about">
-        <About />
-      </section>
+        <section id="about">
+          <About />
+        </section>
 
-      <section id="service">
-        <Service />
-      </section>
+        <section id="service">
+          <Service />
+        </section>
 
-      <section id="staff">
-        <Staffs />
-      </section>
+        <section id="staff">
+          <Staffs />
+        </section>
 
-      <section id="products">
-        <FoodProducts />
-      </section>
+        <section id="products">
+          <FoodProducts />
+        </section>
 
-      <section id="rooms">
-        <Rooms />
-      </section>
+        <section id="rooms">
+          <Rooms />
+        </section>
 
 
-      <section id="contact">
-        <Contact />
-      </section>
+        <section id="contact">
+          <Contact />
+        </section>
 
-      <section id="footer">
-        <Footer />
-      </section>
-    </div>
+        <section id="footer">
+          <Footer />
+        </section>
+      </div>
+    </AuthGuard>
   )
 }
 
