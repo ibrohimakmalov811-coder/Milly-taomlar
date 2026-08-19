@@ -17,10 +17,8 @@ export default function FoodProducts() {
   const [selectedAddons, setSelectedAddons] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Hydration xatosining oldini olish uchun
   const [hasMounted, setHasMounted] = useState(false);
 
-  // Zustand store'dan holat va funksiyalarni olish
   const favorites = useFavoriteStore((state) => state.favorites);
   const toggleFavorite = useFavoriteStore((state) => state.toggleFavorite);
 
@@ -61,34 +59,9 @@ export default function FoodProducts() {
     }
   }
 
-  const handleBack = () => {
-    if (boughtProducts.length === 0) {
-      messageApi.open({
-        type: 'warning',
-        content: "Savatingiz bo'sh!",
-      });
-      return;
-    }
-
-    messageApi.open({
-      type: 'success',
-      content: "Buyurtma muvaffaqiyatli amalga oshirildi! 😁",
-      duration: 2,
-    });
-
-    setTimeout(() => {
-      if (typeof clearCart === 'function') {
-        clearCart();
-      }
-      closeModal();
-      router.push('/');
-    }, 1200);
-  };
-
   const addonsSum = selectedAddons.reduce((acc, curr) => acc + curr, 0);
   const totalPrice = selectedFood ? selectedFood.price * qty + addonsSum : 0;
 
-  // ANIMATSIYA VARIANTLARI
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -132,7 +105,6 @@ export default function FoodProducts() {
       >
         {foods?.slice(0, 8)?.map((item, index) => {
           const isFav = hasMounted && favorites.some((fav) => fav.id === item.id);
-          const isBought = hasMounted && boughtProducts.some((bought) => bought.id === item.id);
           const aosAnimation = index % 2 === 0 ? "fade-left" : "zoom-in";
 
           return (
@@ -191,8 +163,8 @@ export default function FoodProducts() {
                   <span>⭐️ {item.rating}</span>
                 </div>
 
-                <div className="flex items-center justify-between mt-auto gap-2">
-                  <div className="flex flex-col">
+                <div className="flex flex-col gap-3 mt-auto">
+                  <div className="flex items-center justify-between">
                     <span className="text-xs text-[#a0937d] line-through">
                       {item.oldPrice}
                     </span>
@@ -201,28 +173,15 @@ export default function FoodProducts() {
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleShop(item);
-                      }}
-                      title={isBought ? "Savatdan olib tashlash" : "Savatga qo'shish"}
-                      className={`p-2.5 rounded-xl transition-colors shadow-sm flex items-center justify-center ${
-                        isBought
-                          ? 'bg-green-600 hover:bg-green-700 text-white'
-                          : 'bg-[#e2d2b4] hover:bg-[#d4c09c] text-[#725927]'
-                      }`}
-                    >
-                      {isBought ? (
-                        <HiShoppingCart className="w-5 h-5" />
-                      ) : (
-                        <HiOutlineShoppingCart className="w-5 h-5" />
-                      )}
-                    </motion.button>
-                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openModal(item.id);
+                    }}
+                    className="w-full py-2.5 bg-[#A08141] hover:bg-[#886d34] text-white font-semibold rounded-xl transition-colors shadow-md text-sm text-center"
+                  >
+                    Batafsil
+                  </button>
                 </div>
               </div>
             </motion.div>
@@ -251,7 +210,7 @@ export default function FoodProducts() {
             >
               <button
                 onClick={closeModal}
-                className="absolute top-4 right-4 bg-[#e2d2b4] text-[#725927] hover:bg-red-500 hover:text-white w-8 h-8 rounded-full font-bold flex items-center justify-center transition-colors"
+                className="absolute top-4 right-4 bg-[#e2d2b4] text-[#725927] hover:bg-red-500 hover:text-white w-8 h-8 rounded-full font-bold flex items-center justify-center transition-colors z-10"
               >
                 &times;
               </button>
@@ -311,7 +270,7 @@ export default function FoodProducts() {
               </div>
 
               <div className="text-base font-bold text-[#725927] mb-3 flex items-center gap-2">
-                {selectedFood?.addonsTitle}
+                {selectedFood?.addonsTitle || "Salatlar va Qatiq"}
               </div>
               <div className="flex flex-col gap-2.5 mb-6">
                 {selectedFood?.addons?.map((add, idx) => (
@@ -371,14 +330,42 @@ export default function FoodProducts() {
                     {totalPrice.toLocaleString()} so'm
                   </div>
                 </div>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleBack}
-                  className="bg-[#A08141] hover:bg-[#886d34] text-white font-bold py-3 px-6 rounded-xl text-sm transition-colors shadow-md"
-                >
-                  Buyurtma Berish
-                </motion.button>
+
+                {hasMounted && (() => {
+                  const isBought = boughtProducts.some((bought) => bought.id === selectedFood.id);
+                  return (
+                    <motion.button
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => {
+                        const itemToCart = {
+                          ...selectedFood,
+                          qty: qty,
+                          price: totalPrice,
+                          selectedAddons: selectedAddons,
+                        };
+                        toggleShop(itemToCart);
+                      }}
+                      className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-colors shadow-md ${
+                        isBought
+                          ? 'bg-green-600 hover:bg-green-700 text-white'
+                          : 'bg-[#A08141] hover:bg-[#886d34] text-white'
+                      }`}
+                    >
+                      {isBought ? (
+                        <>
+                          <HiShoppingCart className="w-5 h-5" />
+                          Savatdan olish
+                        </>
+                      ) : (
+                        <>
+                          <HiOutlineShoppingCart className="w-5 h-5" />
+                          Savatga qo'shish
+                        </>
+                      )}
+                    </motion.button>
+                  );
+                })()}
               </div>
             </motion.div>
           </motion.div>

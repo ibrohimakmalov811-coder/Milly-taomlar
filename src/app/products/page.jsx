@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import React, { useState, useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import Link from "next/link";
 
 const Products = () => {
   // Tanlangan taom holati (Modal uchun)
@@ -47,7 +48,7 @@ const Products = () => {
         </div>
 
         {/* Taomlar Grid Ro'yxati */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4 sm:p-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 p-4 sm:p-6 max-w-7xl mx-auto">
           {foods.map((item, index) => (
             <div
               key={item.id}
@@ -113,6 +114,9 @@ const Products = () => {
                 >
                   Batafsil
                 </button>
+                <Link href={"/"}>
+                  <button className="bg-gradient-to-r from-[#D4AF37] to-[#B8860B] hover:from-[#B8860B] hover:to-[#966F0D] text-white text-xs sm:text-sm font-semibold px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl shadow-md hover:shadow-lg active:scale-95 transition-all duration-200 cursor-pointer">Xarid Qilish</button>
+                </Link>
               </div>
             </div>
           ))}
@@ -122,12 +126,12 @@ const Products = () => {
       {/* BATAFSIL MODAL OYNASI */}
       {selectedFood && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-          <div 
-            data-aos="zoom-in" 
+          <div
+            data-aos="zoom-in"
             data-aos-duration="300"
             className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col border border-[#D4AF37]/30"
           >
-            
+
             {/* Modal Sarlavhasi / Rasm */}
             <div className="relative h-56 sm:h-64 w-full shrink-0">
               <img
@@ -136,7 +140,7 @@ const Products = () => {
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-              
+
               {/* Yopish tugmasi */}
               <button
                 onClick={closeModal}
@@ -157,7 +161,7 @@ const Products = () => {
 
             {/* Modal Ichidagi Kontent (Scroll bo'ladigan) */}
             <div className="p-5 sm:p-6 overflow-y-auto space-y-5 text-[#2C1810]">
-              
+
               {/* Narx va Ko'rsatkichlar */}
               <div className="flex flex-wrap items-center justify-between gap-3 bg-[#FAF6F0] p-3.5 rounded-xl border border-[#F0E6D2]">
                 <div>
