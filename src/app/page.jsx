@@ -33,10 +33,6 @@ const Home = () => {
           <Staffs />
         </section>
 
-        <section id="products">
-          <FoodProducts />
-        </section>
-
         <section id="rooms">
           <Rooms />
         </section>

@@ -17,7 +17,7 @@ export const foods = [
     id: 2, category: "Xamir Taom", title: "Manti (Go'shtli)", price: 38000, oldPrice: "45,000 so'm",
     desc: "Yupqa xamir ichiga to'g'ralgan sersuv go'sht va piyoz solib, bug'da pishirilgan taom.",
     time: "50 min", portion: "4 kishi", level: "O'rta", rating: "4.8 (95+)",
-    img: "https://tavsiyalar.uz/wp-content/uploads/2022/01/manti-tayyorlash-retsepti-ketma-ketligi.jpg",
+    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRa_mqWKhGwbjNBcTUXtOtkCLlGk6D6jldgbkI5unUdlw&s=10",
     ingredients: ["500g qo'y go'shti", "400g xamir", "400g piyoz", "Ziravorlar"],
     addonsTitle: "🥗 Salatlar va Qatiq",
     addons: [

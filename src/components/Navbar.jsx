@@ -17,7 +17,6 @@ const navLinks = [
   { href: '#about', label: 'Biz haqimizda' },
   { href: '#service', label: 'Bizning Hizmatlar' },
   { href: '#staff', label: 'Bizning Oshpazlar' },
-  { href: '#products', label: 'Taomlar Menusi' },
   { href: '#rooms', label: 'Xonalar' },
   { href: '#contact', label: "Biz bilan bog'lanish" },
 ];

@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
 
@@ -8,33 +8,33 @@ const CANCELLED_STORAGE_KEY = 'tapchan_cancelled_v1';
 const INITIAL_TAPCHANS = [
   {
     id: 1,
-    name: "Samarqand Shohona Tapchani",
+    name: "The choyxona Chodiri",
     capacity: 8,
     view: "Favvora ko'rinishi",
     status: "available",
     price: "Minimal buyurtma: 300,000 so'm",
     popularity: 98,
-    image: "https://www.afisha.uz/uploads/media/2013/09/0276741.jpg"
+    image: "https://avatars.mds.yandex.net/get-altay/14712641/2a00000197361363a4c60357fc4cd876a778/orig"
   },
   {
     id: 2,
-    name: "Buxoro Oila VIP Tapchan",
-    capacity: 6,    
+    name: "The choyxona VIP xonasi",
+    capacity: 6,
     view: "Yashil bog' manzarasi",
     status: "available",
     price: "Bepul band qilish",
     popularity: 92,
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS03IMIponejMMO5OV__xxYSZXFVyJsz-PIRORQ0-oqtfaLZg32FkUErH4&s=10"
+    image: "https://ultima.guide/images/uzbekistan/tashkent/2026/193687795731/gallery-1-src.webp"
   },
   {
     id: 3,
-    name: "Xiva Hujra Tapchani",
+    name: "The choyxona Gaming xonasi",
     capacity: 12,
     view: "Sharqona hovli",
     status: "limited",
     price: "Minimal buyurtma: 500,000 so'm",
     popularity: 99,
-    image: "https://avatars.mds.yandex.net/get-altay/7779554/2a000001885db3e5f0dcb7974a65d3d03786/L_height"
+    image: "https://www.afisha.uz/uploads/media/2023/02/3ca52143b29241ad83b1133093aff874_lf.jpg"
   },
   {
     id: 4,
@@ -68,29 +68,29 @@ const INITIAL_TAPCHANS = [
   },
   {
     id: 7,
-    name: "Andijon Bahoriy Tapchan",
+    name: "The choxona Camfort xonasi",
     capacity: 6,
-    view: "Sharshara bo'yi",
+    view: "",
     status: "available",
     price: "Bepul band qilish",
     popularity: 94,
-    image: "https://avatars.mds.yandex.net/get-altay/16341471/2a000001999bb44a40870c0b43fb4af1610f/L_height"
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMQLS391hTQLvbI3MNN-Cpo59HBqF5504jf79SKzQo01XHFzcC0S-pkeOK&s=10"
   },
   {
     id: 8,
-    name: "Qo'qon Xon Tapchani",
+    name: "The choyxona Uchrashuv xonasi",
     capacity: 10,
     view: "Xon saroyi ko'rinishi",
     status: "limited",
     price: "Minimal buyurtma: 450,000 so'm",
     popularity: 96,
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbLaYkuVnozaC2qp-6_2XF_CJabkKkLrtYj285BEqui00qvJ674VdAyxBD&s=10"
+    image: "https://ultima.guide/images/uzbekistan/tashkent/2026/193687795731/gallery-2-src.webp"
   },
   {
     id: 9,
-    name: "Surxon Milliy Tapchani",
+    name: "The choyxona Milliy Tapchani",
     capacity: 8,
-    view: "Salkin soy bo'yi",
+    view: "Osuda xonalar",
     status: "available",
     price: "Minimal buyurtma: 350,000 so'm",
     popularity: 91,
@@ -98,7 +98,7 @@ const INITIAL_TAPCHANS = [
   },
   {
     id: 10,
-    name: "Chorvoq Manzarali Tapchan",
+    name: "The choyxona Manzarali Tapchani",
     capacity: 6,
     view: "Tog' va suv manzarasi",
     status: "available",
@@ -108,9 +108,8 @@ const INITIAL_TAPCHANS = [
   }
 ];
 
-// Boshlang'ich (default) bandlovlar — compute on client after hydration to avoid SSR/client mismatch
 const makeDefaultBookings = () => {
-  const endTime = Date.now() + 1 * 20 * 20 * 1000; // same duration as before
+  const endTime = Date.now() + 1 * 20 * 20 * 1000;
   return {
     4: {
       date: new Date().toISOString().split('T')[0],
@@ -130,6 +129,8 @@ export default function RoomBooking() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTapchanId, setSelectedTapchanId] = useState(null);
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('Xona band qilindi');
 
@@ -145,6 +146,8 @@ export default function RoomBooking() {
     date: new Date().toISOString().split('T')[0],
     time: '18:00',
     guests: 6,
+    paymentCard: 'Humo',
+    cardNumber: '',
     specialRequests: ''
   });
 
@@ -154,7 +157,6 @@ export default function RoomBooking() {
       if (saved) {
         setBookings(JSON.parse(saved));
       } else {
-        // If nothing saved yet, create a default booking on the client only
         setBookings(makeDefaultBookings());
       }
       const savedCancelled = window.localStorage.getItem(CANCELLED_STORAGE_KEY);
@@ -246,7 +248,6 @@ export default function RoomBooking() {
       if (sortBy === 'capacity-desc') return b.capacity - a.capacity;
       return b.popularity - a.popularity;
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, capacityFilter, availabilityFilter, sortBy, bookings, cancelledIds, tick]);
 
   const handleOpenModal = (id) => {
@@ -290,12 +291,7 @@ export default function RoomBooking() {
     }
 
     setIsModalOpen(false);
-    setToastMessage('Xona band qilindi');
-    setShowToast(true);
-
-    setTimeout(() => {
-      setShowToast(false);
-    }, 4000);
+    setShowSuccessAlert(true);
 
     setFormData({
       fullName: '',
@@ -303,6 +299,8 @@ export default function RoomBooking() {
       date: new Date().toISOString().split('T')[0],
       time: '18:00',
       guests: 6,
+      paymentCard: 'Humo',
+      cardNumber: '',
       specialRequests: ''
     });
   };
@@ -315,6 +313,34 @@ export default function RoomBooking() {
           <div className="bg-white border border-emerald-200 shadow-2xl rounded-2xl px-6 py-3.5 flex items-center gap-3 text-emerald-900 border-l-4 border-l-emerald-500">
             <i className="fa-solid fa-circle-check text-emerald-500 text-xl"></i>
             <span className="text-sm font-semibold tracking-wide">{toastMessage}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Muvaffaqiyatli to'lov alert oynasi */}
+      {showSuccessAlert && (
+        <div 
+          onClick={() => setShowSuccessAlert(false)}
+          className="fixed inset-0 bg-[#2C1E11]/60 backdrop-blur-sm z-[110] flex items-center justify-center p-4 transition-all"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white border border-emerald-200 rounded-3xl max-w-[420px] w-full p-8 shadow-2xl text-center relative animate-in fade-in zoom-in duration-300"
+          >
+            <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-5 text-4xl shadow-inner">
+              <i className="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 className="font-serif-title text-2xl font-bold text-[#2C1E11] mb-2">Ajoyib!</h3>
+            <p className="text-[#7A6A58] text-sm md:text-base mb-6 leading-relaxed">
+              To'lov muvofaqiyatli amalga oshirildi.
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowSuccessAlert(false)}
+              className="w-full py-3.5 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-600/20 transition-all duration-300"
+            >
+              Yopish
+            </button>
           </div>
         </div>
       )}
@@ -454,22 +480,16 @@ export default function RoomBooking() {
                     </div>
 
                     <div className="flex gap-3 mt-auto pt-2">
+                      {/* Faqat Bitta Band qilish tugmasi */}
                       <button
                         disabled={isReserved}
                         onClick={() => handleOpenModal(item.id)}
-                        className={`flex-2 py-3 px-5 rounded-xl text-sm font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${isReserved
+                        className={`w-full py-3.5 px-5 rounded-xl text-sm font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${isReserved
                           ? "bg-[#EFECE6] text-[#A39585] cursor-not-allowed border border-[#E2D8C3]"
                           : "bg-[#B2935B] text-white hover:bg-[#8C6F36] shadow-sm hover:shadow"
                           }`}
                       >
                         {isReserved ? 'Band Qilingan' : 'Band qilish'}
-                      </button>
-
-                      <button
-                        onClick={() => handleOpenModal(item.id)}
-                        className="flex-1 py-3 px-5 rounded-xl text-sm font-semibold border border-[#B2935B] text-[#8C6F36] hover:bg-[#B2935B]/10 transition-all duration-300"
-                      >
-                        Batafsil
                       </button>
                     </div>
                   </div>
@@ -484,6 +504,7 @@ export default function RoomBooking() {
         </div>
       </div>
 
+      {/* Yagona Birlashtirilgan Modal Oyna */}
       {isModalOpen && (
         <div
           onClick={handleCloseModal}
@@ -491,13 +512,16 @@ export default function RoomBooking() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-[#FFFFFF] border border-[#E2D8C3] rounded-3xl max-w-[560px] w-full p-6 md:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto"
+            className="bg-[#FDF6E2] border border-[#E2D8C3] rounded-3xl max-w-[580px] w-full p-6 md:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto"
           >
             <div className="flex justify-between items-center mb-6 pb-4 border-b border-[#E2D8C3]">
-              <h3 className="font-serif-title text-2xl font-bold text-[#2C1E11]">Tapchan Band Qilish</h3>
+              <div>
+                <h3 className="font-serif-title text-2xl font-bold text-[#2C1E11]">Buyurtmani rasmiylashtirish</h3>
+                <p className="text-xs text-[#7A6A58] mt-1">Ma'lumotlaringizni kiriting, buyurtmangiz tez orada rasmiylashtiriladi</p>
+              </div>
               <button
                 onClick={handleCloseModal}
-                className="text-[#7A6A58] hover:text-[#2C1E11] text-xl transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#F9F7F1]"
+                className="text-[#7A6A58] hover:text-[#2C1E11] text-xl transition-colors w-8 h-8 flex items-center justify-center rounded-full bg-[#E2D8C3]/40 hover:bg-[#E2D8C3]"
               >
                 <i className="fa-solid fa-xmark"></i>
               </button>
@@ -509,7 +533,7 @@ export default function RoomBooking() {
                 <select
                   value={selectedTapchanId || ''}
                   onChange={(e) => setSelectedTapchanId(Number(e.target.value))}
-                  className="p-3 bg-[#F9F7F1] border border-[#E2D8C3] rounded-xl outline-none text-sm focus:border-[#B2935B] text-[#2C1E11] transition-all"
+                  className="p-3 bg-white border border-[#E2D8C3] rounded-xl outline-none text-sm focus:border-[#B2935B] text-[#2C1E11] transition-all"
                   required
                 >
                   {INITIAL_TAPCHANS.map((t) => {
@@ -523,37 +547,28 @@ export default function RoomBooking() {
                 </select>
               </div>
 
-              {selectedTapchanId && (
-                <div className="md:col-span-2 bg-[#F9F7F1] border border-[#E2D8C3] p-3 rounded-xl flex justify-between items-center text-xs">
-                  <span className="text-[#7A6A58]">To'lov sharti:</span>
-                  <span className="font-bold text-[#8C6F36]">
-                    {INITIAL_TAPCHANS.find(t => t.id === selectedTapchanId)?.price}
-                  </span>
-                </div>
-              )}
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-[#4A3525]">Ism va Familiya</label>
+              <div className="md:col-span-2 flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-[#4A3525]">Ismingiz</label>
                 <input
                   type="text"
                   id="fullName"
-                  placeholder="masalan: Alisher Navoiy"
+                  placeholder="Masalan: Ibrohim Aliyev"
                   value={formData.fullName}
                   onChange={handleInputChange}
-                  className="p-3 bg-[#F9F7F1] border border-[#E2D8C3] rounded-xl outline-none text-sm focus:border-[#B2935B] text-[#2C1E11] transition-all placeholder-[#A39585]"
+                  className="p-3 bg-white border border-[#E2D8C3] rounded-xl outline-none text-sm focus:border-[#B2935B] text-[#2C1E11] transition-all placeholder-[#A39585]"
                   required
                 />
               </div>
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-[#4A3525]">Telefon Raqam</label>
+              <div className="md:col-span-2 flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-[#4A3525]">Telefon raqami</label>
                 <input
                   type="tel"
                   id="phone"
                   placeholder="+998 90 123 45 67"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  className="p-3 bg-[#F9F7F1] border border-[#E2D8C3] rounded-xl outline-none text-sm focus:border-[#B2935B] text-[#2C1E11] transition-all placeholder-[#A39585]"
+                  className="p-3 bg-white border border-[#E2D8C3] rounded-xl outline-none text-sm focus:border-[#B2935B] text-[#2C1E11] transition-all placeholder-[#A39585]"
                   required
                 />
               </div>
@@ -565,7 +580,7 @@ export default function RoomBooking() {
                   id="date"
                   value={formData.date}
                   onChange={handleInputChange}
-                  className="p-3 bg-[#F9F7F1] border border-[#E2D8C3] rounded-xl outline-none text-sm focus:border-[#B2935B] text-[#2C1E11] transition-all"
+                  className="p-3 bg-white border border-[#E2D8C3] rounded-xl outline-none text-sm focus:border-[#B2935B] text-[#2C1E11] transition-all"
                   required
                 />
               </div>
@@ -577,7 +592,7 @@ export default function RoomBooking() {
                   id="time"
                   value={formData.time}
                   onChange={handleInputChange}
-                  className="p-3 bg-[#F9F7F1] border border-[#E2D8C3] rounded-xl outline-none text-sm focus:border-[#B2935B] text-[#2C1E11] transition-all"
+                  className="p-3 bg-white border border-[#E2D8C3] rounded-xl outline-none text-sm focus:border-[#B2935B] text-[#2C1E11] transition-all"
                   required
                 />
               </div>
@@ -591,29 +606,74 @@ export default function RoomBooking() {
                   max="20"
                   value={formData.guests}
                   onChange={handleInputChange}
-                  className="p-3 bg-[#F9F7F1] border border-[#E2D8C3] rounded-xl outline-none text-sm focus:border-[#B2935B] text-[#2C1E11] transition-all"
+                  className="p-3 bg-white border border-[#E2D8C3] rounded-xl outline-none text-sm focus:border-[#B2935B] text-[#2C1E11] transition-all"
                   required
                 />
               </div>
 
               <div className="md:col-span-2 flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-[#4A3525]">Qo'shimcha Istaklar</label>
+                <label className="text-xs font-semibold text-[#4A3525]">To'lov karta turi</label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {['Humo', 'UzCard', 'Xalq banki', 'Kapitalbank', 'Boshqa'].map((card) => (
+                    <button
+                      type="button"
+                      key={card}
+                      onClick={() => setFormData(prev => ({ ...prev, paymentCard: card }))}
+                      className={`py-2.5 px-3 rounded-xl text-xs font-medium border text-left transition-all flex items-center gap-2 ${
+                        formData.paymentCard === card 
+                          ? 'bg-white border-[#B2935B] shadow-sm text-[#2C1E11] ring-1 ring-[#B2935B]' 
+                          : 'bg-[#F3EFE0]/60 border-[#E2D8C3] text-[#7A6A58] hover:bg-white'
+                      }`}
+                    >
+                      <span className={`w-2.5 h-2.5 rounded-full ${
+                        formData.paymentCard === card ? 'bg-[#B2935B]' : 'bg-[#C5B9A5]'
+                      }`}></span>
+                      {card}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="md:col-span-2 flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-[#4A3525]">Karta raqami</label>
+                <input
+                  type="text"
+                  id="cardNumber"
+                  placeholder="0000 0000 0000 0000"
+                  maxLength="19"
+                  value={formData.cardNumber}
+                  onChange={handleInputChange}
+                  className="p-3 bg-white border border-[#E2D8C3] rounded-xl outline-none text-sm focus:border-[#B2935B] text-[#2C1E11] tracking-widest transition-all placeholder-[#A39585]"
+                  required
+                />
+              </div>
+
+              <div className="md:col-span-2 flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-[#4A3525]">Izoh (ixtiyoriy)</label>
                 <textarea
                   id="specialRequests"
-                  rows="3"
-                  placeholder="Tug'ilgan kun bezatilishi, maxsus poyandoz va hokazo..."
+                  rows="2"
+                  placeholder="Qo'shimcha izoh, masalan: achchiq bo'lmasin, bezatib qo'yilsin..."
                   value={formData.specialRequests}
                   onChange={handleInputChange}
-                  className="p-3 bg-[#F9F7F1] border border-[#E2D8C3] rounded-xl outline-none text-sm focus:border-[#B2935B] text-[#2C1E11] transition-all placeholder-[#A39585]"
+                  className="p-3 bg-white border border-[#E2D8C3] rounded-xl outline-none text-sm focus:border-[#B2935B] text-[#2C1E11] transition-all placeholder-[#A39585]"
                 ></textarea>
               </div>
 
-              <button
-                type="submit"
-                className="md:col-span-2 mt-3 w-full py-3.5 px-6 bg-[#B2935B] text-white font-semibold rounded-xl hover:bg-[#8C6F36] shadow-sm hover:shadow transition-all duration-300"
-              >
-                Band qilishni tasdiqlash
-              </button>
+              <div className="md:col-span-2 pt-3 border-t border-[#E2D8C3] flex items-center justify-between gap-4 mt-2">
+                <div>
+                  <span className="text-xs text-[#7A6A58] block uppercase tracking-wider">Jami to'lov</span>
+                  <span className="font-bold text-lg text-[#8C6F36]">
+                    {INITIAL_TAPCHANS.find(t => t.id === selectedTapchanId)?.price || "Bepul"}
+                  </span>
+                </div>
+                <button
+                  type="submit"
+                  className="py-3.5 px-8 bg-[#8C6F36] hover:bg-[#725927] text-white font-semibold rounded-xl shadow-md transition-all duration-300"
+                >
+                  Buyurtmani tasdiqlash
+                </button>
+              </div>
             </form>
           </div>
         </div>

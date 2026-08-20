@@ -18,7 +18,7 @@ const FEATURES = [
 const STATS = [
     { icon: FaAward, value: "35+", label: "Yillik tajriba" },
     { icon: FaUsers, value: "50 000+", label: "Mamnun mehmonlar" },
-    { icon: FaLeaf, value: "120+", label: "Milliy taom retseptlari" },
+    { icon: FaLeaf, value: "30+", label: "Milliy taom retseptlari" },
 ];
 
 export default function About() {
