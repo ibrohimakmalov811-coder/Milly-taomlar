@@ -103,7 +103,7 @@ export default function FoodProducts() {
         id="menu-grid"
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 py-8 gap-7 max-w-[1400px] mx-auto"
       >
-        {foods?.slice(0, 8)?.map((item, index) => {
+        {foods?.map((item, index) => {
           const isFav = hasMounted && favorites.some((fav) => fav.id === item.id);
           const aosAnimation = index % 2 === 0 ? "fade-left" : "zoom-in";
 

@@ -9,21 +9,19 @@ export default function Footer() {
   return (
     <footer className="bg-stone-900 text-stone-300 mt-10 py-8 border-t-2 border-amber-600">
       <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4 text-center md:text-left">
-        
+
         {/* Logo va shior */}
         <div className="flex flex-col sm:flex-row items-center gap-3 transition-all duration-700 ease-out transform opacity-100 translate-y-0">
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="inline-block transition-transform duration-300 hover:scale-105"
           >
-            <Image
-              src="/logo.png"
-              alt="Milliy Taomlar logotipi"
+            <img 
+              src="/images/logo.png"
+              alt="Logo"
               width={100}
               height={100}
-              className="w-20 sm:w-24 md:w-[100px] h-auto object-contain"
-              priority
-            />
+              className="w-20 sm:w-24 md:w-[100px] h-auto object-contain" />
           </Link>
 
           <div className="flex flex-col items-center sm:items-start">

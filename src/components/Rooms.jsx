@@ -611,42 +611,9 @@ export default function RoomBooking() {
                 />
               </div>
 
-              <div className="md:col-span-2 flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-[#4A3525]">To'lov karta turi</label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {['Humo', 'UzCard', 'Xalq banki', 'Kapitalbank', 'Boshqa'].map((card) => (
-                    <button
-                      type="button"
-                      key={card}
-                      onClick={() => setFormData(prev => ({ ...prev, paymentCard: card }))}
-                      className={`py-2.5 px-3 rounded-xl text-xs font-medium border text-left transition-all flex items-center gap-2 ${
-                        formData.paymentCard === card 
-                          ? 'bg-white border-[#B2935B] shadow-sm text-[#2C1E11] ring-1 ring-[#B2935B]' 
-                          : 'bg-[#F3EFE0]/60 border-[#E2D8C3] text-[#7A6A58] hover:bg-white'
-                      }`}
-                    >
-                      <span className={`w-2.5 h-2.5 rounded-full ${
-                        formData.paymentCard === card ? 'bg-[#B2935B]' : 'bg-[#C5B9A5]'
-                      }`}></span>
-                      {card}
-                    </button>
-                  ))}
-                </div>
-              </div>
+            
 
-              <div className="md:col-span-2 flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-[#4A3525]">Karta raqami</label>
-                <input
-                  type="text"
-                  id="cardNumber"
-                  placeholder="0000 0000 0000 0000"
-                  maxLength="19"
-                  value={formData.cardNumber}
-                  onChange={handleInputChange}
-                  className="p-3 bg-white border border-[#E2D8C3] rounded-xl outline-none text-sm focus:border-[#B2935B] text-[#2C1E11] tracking-widest transition-all placeholder-[#A39585]"
-                  required
-                />
-              </div>
+          
 
               <div className="md:col-span-2 flex flex-col gap-1.5">
                 <label className="text-xs font-semibold text-[#4A3525]">Izoh (ixtiyoriy)</label>
@@ -661,15 +628,10 @@ export default function RoomBooking() {
               </div>
 
               <div className="md:col-span-2 pt-3 border-t border-[#E2D8C3] flex items-center justify-between gap-4 mt-2">
-                <div>
-                  <span className="text-xs text-[#7A6A58] block uppercase tracking-wider">Jami to'lov</span>
-                  <span className="font-bold text-lg text-[#8C6F36]">
-                    {INITIAL_TAPCHANS.find(t => t.id === selectedTapchanId)?.price || "Bepul"}
-                  </span>
-                </div>
+                
                 <button
                   type="submit"
-                  className="py-3.5 px-8 bg-[#8C6F36] hover:bg-[#725927] text-white font-semibold rounded-xl shadow-md transition-all duration-300"
+                  className="py-3.5 px-8 bg-[#8C6F36] w-full hover:bg-[#725927] text-white font-semibold rounded-xl shadow-md transition-all duration-300"
                 >
                   Buyurtmani tasdiqlash
                 </button>
